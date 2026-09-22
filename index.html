@@ -46,16 +46,17 @@ button{touch-action:manipulation;cursor:pointer}
 .screen.on{display:flex;flex-direction:column}
 
 /* Setup */
-#setup{padding:calc(20px + env(safe-area-inset-top,0px)) 18px 28px;gap:22px}
+#setup{padding:calc(16px + env(safe-area-inset-top,0px)) 16px 28px;gap:18px}
 #nosleep{position:fixed;top:0;left:0;width:1px;height:1px;opacity:.01;pointer-events:none}
 .back{border:0;background:transparent;color:var(--muted);font-weight:600;padding:4px 0;font-size:15px}
-.wcard{background:var(--panel);border-radius:14px;padding:14px;display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;border:0;text-align:left}
-.wcard b{font-family:var(--display);font-weight:800;font-size:26px;display:block;line-height:1}
-.wcard small{color:var(--muted);font-size:13px}
-.wcard .meta{font-family:var(--display);font-weight:700;font-size:20px;color:var(--muted);white-space:nowrap}
+.wcard{background:var(--panel);border-radius:14px;padding:14px;display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;border:0;text-align:left;font-family:var(--text)}
+.wcard .lbl{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.wcard b{font-family:var(--display);font-weight:800;font-size:24px;line-height:1.05}
+.wcard small{color:var(--muted);font-size:13px;line-height:1.3}
+.wcard .meta{font-family:var(--display);font-weight:700;font-size:19px;color:var(--muted);white-space:nowrap}
 .hint{color:var(--muted);font-size:13px;margin:0}
-.title h1{font-family:var(--display);font-weight:800;font-size:44px;line-height:.95;margin:6px 0 8px;letter-spacing:-.01em}
-.title p{margin:0;color:var(--muted)}
+.title h1{font-family:var(--display);font-weight:800;font-size:clamp(32px,9vw,44px);line-height:.98;margin:6px 0 8px;letter-spacing:-.01em}
+.title p{margin:0 0 6px;color:var(--muted);font-size:15px;line-height:1.4}
 .total{font-family:var(--display);font-weight:600;font-size:22px;color:var(--ink)}
 .blocks{display:flex;flex-direction:column;gap:12px}
 .block{background:var(--panel);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
@@ -86,7 +87,18 @@ button{touch-action:manipulation;cursor:pointer}
 .switch::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .15s}
 .switch:checked{background:var(--rest)}
 .switch:checked::after{transform:translateX(20px)}
-.go{border:0;border-radius:16px;background:var(--work);color:var(--work-ink);font-family:var(--display);font-weight:800;font-size:28px;padding:16px;letter-spacing:.01em}
+.go{border:0;border-radius:16px;background:var(--work);color:var(--work-ink);font-family:var(--display);font-weight:800;font-size:26px;padding:15px;letter-spacing:.01em}
+@media (max-width:400px){
+  .bh{font-size:21px}
+  .block{padding:11px 12px}
+  .seg button{padding:6px 10px;font-size:13px}
+  .vals label{padding:3px 6px;gap:2px}
+  .vals input{width:36px;font-size:18px}
+  .exc .ex{font-size:15px}
+  .row{padding:9px 0}
+  .stepper button{width:32px;height:32px}
+  .stepper output{min-width:42px;font-size:20px}
+}
 
 /* Run */
 #run{height:100%}
@@ -242,7 +254,7 @@ const EX={
     A:side([48,138],[60,140],[100,142],[[[118,120],[134,146]],[[122,118],[138,146]]],[[[64,128],[52,132]]]),
     B:side([55,122],[66,127],[100,142],[[[118,120],[134,146]],[[122,118],[138,146]]],[[[70,114],[58,118]]])}
 };
-const APP_V=5;
+const APP_V=6;
 const WORKOUTS=[
   {id:"s1",name:"Semana 1",sub:"Força com halteres, 4 blocos em superset",
    blocks:[["incline","split"],["row","sumo"],["deadlift","triceps"],["pulldown","crunch"]]}
@@ -320,7 +332,7 @@ $("blocks").addEventListener("change",e=>{const i=e.target.closest("input");if(!
 function estimate(w){const prev=W;W=w;const st=build();W=prev;
   return (st.some(x=>x.reps)?"~":"")+fmt(st.reduce((a,x)=>a+x.est,0))}
 function renderHome(){
-  $("wlist").innerHTML=WORKOUTS.map(w=>`<button class="wcard" data-w="${w.id}"><span><b>${w.name}</b><small>${w.sub}</small></span><span class="meta">${estimate(w)}</span></button>`).join("")+
+  $("wlist").innerHTML=WORKOUTS.map(w=>`<button class="wcard" data-w="${w.id}"><span class="lbl"><b>${w.name}</b><small>${w.sub}</small></span><span class="meta">${estimate(w)}</span></button>`).join("")+
     `<p class="hint">Pede-me para acrescentar o treino da próxima semana e ele aparece aqui.<br>Versão ${APP_V}</p>`;
   $("wlist").querySelectorAll(".wcard").forEach(b=>b.onclick=()=>openWorkout(b.dataset.w));
 }
