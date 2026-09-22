@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Treino de força com halteres</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Treino">
+<meta name="theme-color" content="#15181c">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#e7eaee; --panel:#f7f8fa; --ink:#14202b; --muted:#5d6874; --line:#cfd5dc; --prop:#b7bfc8;
+  --work:#f2c230; --work-ink:#14202b;
+  --rest:#2c5cc5; --rest-ink:#ffffff;
+  --trans:#5b3fc4; --trans-ink:#ffffff;
+  --prep:#7d8894; --prep-ink:#ffffff;
+  --db:#14202b;
+  --display:"Barlow Condensed","Arial Narrow","Roboto Condensed",system-ui,sans-serif;
+  --text:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15181c; --panel:#1f2329; --ink:#eef1f4; --muted:#9aa4ae; --line:#2f353d; --prop:#48505a;
+    --work:#f2c230; --work-ink:#14202b; --rest:#3d6fe0; --trans:#7458e0; --prep:#56606b; --db:#f2c230;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15181c; --panel:#1f2329; --ink:#eef1f4; --muted:#9aa4ae; --line:#2f353d; --prop:#48505a;
+  --work:#f2c230; --work-ink:#14202b; --rest:#3d6fe0; --trans:#7458e0; --prep:#56606b; --db:#f2c230;
+}
+:root{box-sizing:border-box;padding-bottom:env(safe-area-inset-bottom,0px);}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--text);font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+button{touch-action:manipulation;cursor:pointer}
+:focus-visible{outline:3px solid var(--rest);outline-offset:2px}
+.screen{display:none;max-width:560px;margin:0 auto;min-height:100%}
+.screen.on{display:flex;flex-direction:column}
+
+/* Setup */
+#setup{padding:calc(20px + env(safe-area-inset-top,0px)) 18px 28px;gap:22px}
+#nosleep{position:fixed;top:0;left:0;width:1px;height:1px;opacity:.01;pointer-events:none}
+.back{border:0;background:transparent;color:var(--muted);font-weight:600;padding:4px 0;font-size:15px}
+.wcard{background:var(--panel);border-radius:14px;padding:14px;display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;border:0;text-align:left}
+.wcard b{font-family:var(--display);font-weight:800;font-size:26px;display:block;line-height:1}
+.wcard small{color:var(--muted);font-size:13px}
+.wcard .meta{font-family:var(--display);font-weight:700;font-size:20px;color:var(--muted);white-space:nowrap}
+.hint{color:var(--muted);font-size:13px;margin:0}
+.title h1{font-family:var(--display);font-weight:800;font-size:44px;line-height:.95;margin:6px 0 8px;letter-spacing:-.01em}
+.title p{margin:0;color:var(--muted)}
+.total{font-family:var(--display);font-weight:600;font-size:22px;color:var(--ink)}
+.blocks{display:flex;flex-direction:column;gap:12px}
+.block{background:var(--panel);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.bh{font-family:var(--display);font-weight:800;font-size:24px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.bh span{font-family:var(--text);font-weight:500;font-size:13px;color:var(--muted)}
+.general{outline:2px solid var(--work);outline-offset:-2px}
+.general .exc{border-top:0;padding-top:0}
+.exc{border-top:1px solid var(--line);padding-top:10px;display:grid;gap:8px}
+.exc .ex{font-weight:600;line-height:1.25}
+.exc .ex small{display:block;font-weight:400;color:var(--muted);font-size:13px}
+.seg{display:inline-flex;background:var(--bg);border-radius:10px;padding:3px;width:max-content}
+.seg button{border:0;background:transparent;padding:6px 12px;border-radius:8px;font-size:14px;font-weight:600;color:var(--muted)}
+.seg button.on{background:var(--panel);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.15)}
+.vals{display:flex;flex-wrap:wrap;gap:6px}
+.vals label{display:flex;align-items:center;gap:3px;background:var(--bg);border-radius:10px;padding:4px 8px}
+.vals span{font-size:12px;color:var(--muted);font-weight:600}
+.vals input{width:42px;border:0;background:transparent;font-family:var(--display);font-weight:700;font-size:20px;text-align:right;padding:2px;-moz-appearance:textfield;appearance:textfield}
+.vals input::-webkit-inner-spin-button,.vals input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.vals em{font-style:normal;font-size:12px;color:var(--muted)}
+.settings{background:var(--panel);border-radius:14px;padding:6px 14px}
+.row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);gap:12px}
+.row:last-child{border-bottom:0}
+.row label{flex:1}
+.stepper{display:flex;align-items:center;gap:6px}
+.stepper button{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:transparent;font-size:20px;line-height:1}
+.stepper output{min-width:48px;text-align:center;font-family:var(--display);font-weight:700;font-size:22px}
+.switch{appearance:none;width:48px;height:28px;border-radius:14px;background:var(--line);position:relative;margin:0;cursor:pointer;transition:background .15s}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .15s}
+.switch:checked{background:var(--rest)}
+.switch:checked::after{transform:translateX(20px)}
+.go{border:0;border-radius:16px;background:var(--work);color:var(--work-ink);font-family:var(--display);font-weight:800;font-size:28px;padding:16px;letter-spacing:.01em}
+
+/* Run */
+#run{height:100%}
+.band{background:var(--phase);color:var(--phase-ink);padding:calc(10px + env(safe-area-inset-top,0px)) 18px 0;transition:background .25s,color .25s;position:relative}
+.bandtop{display:flex;align-items:center;gap:8px}
+.phase{font-family:var(--display);font-weight:700;font-size:22px;flex:1}
+.pill{font-size:13px;font-weight:600;padding:3px 9px;border-radius:99px;background:color-mix(in srgb,currentColor 14%,transparent)}
+.x{border:0;background:transparent;font-size:22px;width:36px;height:36px;border-radius:10px}
+.clock{font-family:var(--display);font-weight:800;font-size:clamp(96px,30vw,150px);line-height:.9;letter-spacing:-.02em;padding:4px 0 12px;font-variant-numeric:tabular-nums}
+.clockrow{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+.sub{font-size:14px;font-weight:600;text-align:right;padding-bottom:20px;font-variant-numeric:tabular-nums}
+.clock .unit{font-size:.3em;margin-left:8px;letter-spacing:0}
+.ctrl button.main.done{background:var(--work);color:var(--work-ink)}
+.stepbar{position:absolute;left:0;right:0;bottom:0;height:6px;background:color-mix(in srgb,currentColor 18%,transparent)}
+.stepbar i{display:block;height:100%;width:0;background:currentColor}
+.body{flex:1;display:flex;flex-direction:column;padding:12px 18px 10px;gap:8px;min-height:0}
+.stage{position:relative;flex:1;min-height:170px;display:flex;align-items:center;justify-content:center}
+#fig{width:100%;height:100%;max-height:300px}
+#fig .limb{fill:none;stroke:var(--ink);stroke-width:5.5;stroke-linecap:round;stroke-linejoin:round}
+#fig .far{opacity:.35}
+#fig .prop{fill:none;stroke:var(--prop);stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
+#fig .thin{stroke-width:3}
+#fig .propf{fill:var(--prop)}
+#fig .floor{stroke:var(--line);stroke-width:2}
+#fig .head{fill:var(--panel);stroke:var(--ink);stroke-width:4}
+#fig .db{fill:var(--db)}
+#fig .cable{stroke:var(--muted);stroke-width:1.5}
+.stage.dim #fig{opacity:.55}
+.banner{position:absolute;top:8px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);font-family:var(--display);font-weight:700;font-size:22px;padding:4px 14px;border-radius:10px;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
+.banner.show{opacity:1}
+.name h2{font-family:var(--display);font-weight:800;font-size:30px;line-height:1;margin:0}
+.name p{margin:3px 0 0;color:var(--muted);font-size:14px}
+.cues{margin:4px 0 0;padding:0;list-style:none;font-size:15px;display:grid;gap:3px}
+.cues li{padding-left:16px;position:relative}
+.cues li::before{content:"";position:absolute;left:0;top:.6em;width:7px;height:7px;border-radius:2px;background:var(--work)}
+.next{font-size:14px;color:var(--muted);border-top:1px solid var(--line);padding-top:8px}
+.next b{color:var(--ink);font-weight:600}
+.ctrl{display:flex;justify-content:center;align-items:center;gap:22px;padding:6px 0 14px}
+.ctrl button{border:0;background:var(--panel);width:58px;height:58px;border-radius:50%;display:grid;place-items:center}
+.ctrl button.main{width:76px;height:76px;background:var(--ink);color:var(--bg)}
+.ctrl svg{width:26px;height:26px;fill:currentColor}
+.ctrl .main svg{width:32px;height:32px}
+.overall{height:3px;background:var(--line);margin:0 18px}
+.overall i{display:block;height:100%;width:0;background:var(--muted)}
+
+/* Done */
+#done{padding:calc(40px + env(safe-area-inset-top,0px)) 18px 40px;justify-content:center;gap:18px;text-align:left}
+#done h1{font-family:var(--display);font-weight:800;font-size:56px;line-height:.95;margin:0}
+#done p{margin:0;color:var(--muted);font-size:18px}
+
+@media (prefers-reduced-motion: reduce){.band{transition:none}}
+</style>
+</head>
+<body>
+<video id="nosleep" muted playsinline loop disablepictureinpicture aria-hidden="true" src="data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAMwbW9vdgAAAGxtdmhkAAAAAAAAAAAAAAAAAAAD6AAAC7gAAQAAAQAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAlp0cmFrAAAAXHRraGQAAAADAAAAAAAAAAAAAAABAAAAAAAAC7gAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAAEAAAABAAAAAAAAkZWR0cwAAABxlbHN0AAAAAAAAAAEAAAu4AAAAAAABAAAAAAHSbWRpYQAAACBtZGhkAAAAAAAAAAAAAAAAAABAAAAAwABVxAAAAAAALWhkbHIAAAAAAAAAAHZpZGUAAAAAAAAAAAAAAABWaWRlb0hhbmRsZXIAAAABfW1pbmYAAAAUdm1oZAAAAAEAAAAAAAAAAAAAACRkaW5mAAAAHGRyZWYAAAAAAAAAAQAAAAx1cmwgAAAAAQAAAT1zdGJsAAAAuXN0c2QAAAAAAAAAAQAAAKlhdmMxAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAEAAQABIAAAASAAAAAAAAAABFUxhdmM2MC4zMS4xMDIgbGlieDI2NAAAAAAAAAAAAAAAGP//AAAAL2F2Y0MBQsAK/+EAF2dCwArZBCbARAAAAwAEAAADAAg8SJkgAQAFaMuDyyAAAAAQcGFzcAAAAAEAAAABAAAAFGJ0cnQAAAAAAAAHEgAABxIAAAAYc3R0cwAAAAAAAAABAAAAAwAAQAAAAAAUc3RzcwAAAAAAAAABAAAAAQAAABxzdHNjAAAAAAAAAAEAAAABAAAAAwAAAAEAAAAgc3RzegAAAAAAAAAAAAAAAwAAApIAAAAKAAAACwAAABRzdGNvAAAAAAAAAAEAAANgAAAAYnVkdGEAAABabWV0YQAAAAAAAAAhaGRscgAAAAAAAAAAbWRpcmFwcGwAAAAAAAAAAAAAAAAtaWxzdAAAACWpdG9vAAAAHWRhdGEAAAABAAAAAExhdmY2MC4xNi4xMDAAAAAIZnJlZQAAAq9tZGF0AAACcAYF//9s3EXpvebZSLeWLNgg2SPu73gyNjQgLSBjb3JlIDE2NCByMzEwOCAzMWUxOWY5IC0gSC4yNjQvTVBFRy00IEFWQyBjb2RlYyAtIENvcHlsZWZ0IDIwMDMtMjAyMyAtIGh0dHA6Ly93d3cudmlkZW9sYW4ub3JnL3gyNjQuaHRtbCAtIG9wdGlvbnM6IGNhYmFjPTAgcmVmPTMgZGVibG9jaz0xOjA6MCBhbmFseXNlPTB4MToweDExMSBtZT1oZXggc3VibWU9NyBwc3k9MSBwc3lfcmQ9MS4wMDowLjAwIG1peGVkX3JlZj0xIG1lX3JhbmdlPTE2IGNocm9tYV9tZT0xIHRyZWxsaXM9MSA4eDhkY3Q9MCBjcW09MCBkZWFkem9uZT0yMSwxMSBmYXN0X3Bza2lwPTEgY2hyb21hX3FwX29mZnNldD0tMiB0aHJlYWRzPTEgbG9va2FoZWFkX3RocmVhZHM9MSBzbGljZWRfdGhyZWFkcz0wIG5yPTAgZGVjaW1hdGU9MSBpbnRlcmxhY2VkPTAgYmx1cmF5X2NvbXBhdD0wIGNvbnN0cmFpbmVkX2ludHJhPTAgYmZyYW1lcz0wIHdlaWdodHA9MCBrZXlpbnQ9MjUwIGtleWludF9taW49MSBzY2VuZWN1dD00MCBpbnRyYV9yZWZyZXNoPTAgcmNfbG9va2FoZWFkPTQwIHJjPWNyZiBtYnRyZWU9MSBjcmY9MjMuMCBxY29tcD0wLjYwIHFwbWluPTAgcXBtYXg9NjkgcXBzdGVwPTQgaXBfcmF0aW89MS40MCBhcT0xOjEuMDAAgAAAABpliIQF////D0UAAVefJycnXXXXXXXXXXXXgAAAAAZBmjgLeEYAAAAHQZpUAr4RgA=="></video>
+
+<section class="screen on" id="home">
+  <div class="title">
+    <h1>Treinos</h1>
+    <p>Escolhe o treino. Cada um guarda as suas próprias definições de tempo, repetições e voltas.</p>
+  </div>
+  <div class="blocks" id="wlist"></div>
+</section>
+
+<section class="screen" id="setup">
+  <div class="title">
+    <button class="back" id="back">‹ Treinos</button>
+    <h1 id="wName">Força com halteres</h1>
+    <p>Define tempo ou repetições para todos os exercícios no primeiro cartão. Se quiseres uma exceção, ajusta o exercício no respetivo bloco. Mudar a V1 atualiza as voltas que tinham o mesmo valor.</p><p>Duração estimada: <span class="total" id="total">–</span></p>
+  </div>
+  <div class="blocks" id="blocks"></div>
+  <div class="settings" id="settings"></div>
+  <button class="go" id="start">Começar treino</button>
+</section>
+
+<section class="screen" id="run">
+  <div class="band" id="band">
+    <div class="bandtop">
+      <div class="phase" id="phase">Exercício</div>
+      <span class="pill" id="pBlock">Bloco 1/4</span>
+      <span class="pill" id="pRound">Volta 1/4</span>
+      <button class="x" id="quit" aria-label="Terminar treino">✕</button>
+    </div>
+    <div class="clockrow"><div class="clock" id="clock">45</div><div class="sub" id="sub"></div></div>
+    <div class="stepbar"><i id="stepbar"></i></div>
+  </div>
+  <div class="overall"><i id="overall"></i></div>
+  <div class="body">
+    <div class="stage" id="stage">
+      <svg id="fig" viewBox="20 0 150 156" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
+      <div class="banner" id="banner">Troca de perna</div>
+    </div>
+    <div class="name"><h2 id="exName"></h2><p id="exPt"></p></div>
+    <ul class="cues" id="cues"></ul>
+    <div class="next" id="next"></div>
+  </div>
+  <nav class="ctrl">
+    <button id="prev" aria-label="Anterior"><svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg></button>
+    <button id="play" class="main" aria-label="Pausar"><svg viewBox="0 0 24 24" id="playIcon"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></button>
+    <button id="skip" aria-label="Seguinte"><svg viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM4 5v14l11-7z"/></svg></button>
+  </nav>
+</section>
+
+<section class="screen" id="done">
+  <h1>Treino concluído</h1>
+  <p id="doneTxt"></p>
+  <button class="go" id="again">Voltar ao início</button>
+</section>
+
+<script>
+/* ---------- Poses ---------- */
+const side=(h,s,p,legs,arms)=>({h,s,p,legs:legs.map(l=>[p,...l]),arms:arms.map(a=>[s,...a])});
+
+const EX={
+  incline:{name:"Incline Dumbbell Bench Press",pt:"Supino inclinado com halteres",
+    cues:["Banco a 30–45°, omoplatas juntas e para baixo","Desce controlado até à linha do peito","Empurra para cima sem bloquear os cotovelos"],
+    props:'<path class="prop" d="M50 90 L99 119 H130"/><path class="prop thin" d="M80 119 V148 M122 119 V148"/>',db:"hands",
+    A:side([55,86],[66,93],[102,113],[[[124,111],[120,148]],[[128,109],[132,148]]],[[[52,106],[60,84]]]),
+    B:side([55,86],[66,93],[102,113],[[[124,111],[120,148]],[[128,109],[132,148]]],[[[64,70],[62,48]]])},
+  split:{name:"Split Squat",pt:"Agachamento com pernas afastadas",alt:true,
+    cues:["Tronco direito, halteres ao lado do corpo","Joelho de trás desce quase ao chão","Peso no calcanhar da frente, perna de trás só apoia"],
+    props:"",db:"hands",
+    A:side([100,22],[100,34],[100,76],[[[82,112],[62,146]],[[114,112],[124,148]]],[[[102,56],[103,76]]]),
+    B:side([99,52],[99,64],[98,106],[[[84,136],[62,146]],[[130,112],[124,148]]],[[[101,86],[102,106]]])},
+  row:{name:"Chest Supported Dumbbell Row",pt:"Remada com peito apoiado",
+    cues:["Peito apoiado no banco inclinado","Puxa os cotovelos para trás, junto ao corpo","Aperta as omoplatas no topo e desce devagar"],
+    props:'<path class="prop" d="M86 107 L120 80"/><path class="prop thin" d="M103 94 V148 M88 148 H124"/>',db:"hands",
+    A:side([123,66],[114,74],[82,100],[[[76,124],[70,148]],[[84,126],[82,148]]],[[[116,96],[117,118]]]),
+    B:side([123,66],[114,74],[82,100],[[[76,124],[70,148]],[[84,126],[82,148]]],[[[96,76],[110,92]]])},
+  sumo:{name:"Sumo Squat",pt:"Agachamento sumo",
+    cues:["Pés largos, pontas viradas para fora","Joelhos acompanham a direção dos pés","Tronco alto, halter a descer entre as pernas"],
+    props:"",db:"mid",front:true,
+    A:{h:[100,26],s:[100,38],p:[100,78],legs:[[[94,78],[84,112],[72,148]],[[106,78],[116,112],[128,148]]],arms:[[[90,40],[92,60],[97,80]],[[110,40],[108,60],[103,80]]]},
+    B:{h:[100,56],s:[100,68],p:[100,106],legs:[[[94,106],[74,116],[72,148]],[[106,106],[126,116],[128,148]]],arms:[[[90,70],[92,90],[97,110]],[[110,70],[108,90],[103,110]]]}},
+  deadlift:{name:"Dumbbell Deadlift",pt:"Peso morto com halteres",
+    cues:["Coluna neutra do início ao fim","Anca para trás, joelhos ligeiramente fletidos","Halteres junto às pernas; sobe a contrair os glúteos"],
+    props:"",db:"hands",
+    A:side([102,26],[101,38],[100,78],[[[100,112],[98,148]],[[103,112],[102,148]]],[[[102,58],[103,78]]]),
+    B:side([127,68],[117,74],[82,94],[[[98,118],[98,148]],[[102,118],[102,148]]],[[[117,96],[117,118]]])},
+  triceps:{name:"Incline Dumbbell Triceps Extension",pt:"Extensão de tríceps no banco inclinado",
+    cues:["Banco a 30–45°, costas bem apoiadas","Cotovelos fixos, braços quase na vertical","Desce os halteres atrás da cabeça e estende sem bloquear"],
+    props:'<path class="prop" d="M50 90 L99 119 H130"/><path class="prop thin" d="M80 119 V148 M122 119 V148"/>',db:"hands",
+    A:side([55,86],[66,93],[102,113],[[[124,111],[120,148]],[[128,109],[132,148]]],[[[62,71],[60,49]]]),
+    B:side([55,86],[66,93],[102,113],[[[124,111],[120,148]],[[128,109],[132,148]]],[[[62,71],[43,80]]])},
+  pulldown:{name:"Lat Pulldown",pt:"Puxada ao peito",
+    cues:["Pega um pouco mais larga que os ombros","Peito para cima, ligeira inclinação para trás","Puxa a barra ao topo do peito e sobe controlado"],
+    props:'<path class="prop" d="M80 120 H114"/><path class="prop thin" d="M98 120 V148 M150 4 V148 M104 4 H150"/><circle class="propf" cx="128" cy="103" r="5"/>',db:"bar",
+    A:side([99,62],[98,74],[96,114],[[[124,114],[126,148]],[[128,113],[131,148]]],[[[101,52],[104,30]]]),
+    B:side([99,62],[98,74],[96,114],[[[124,114],[126,148]],[[128,113],[131,148]]],[[[88,92],[106,77]]])},
+  crunch:{name:"Crunch",pt:"Abdominal",
+    cues:["Lombar colada ao chão","Mãos atrás da cabeça, sem puxar o pescoço","Sobe as omoplatas e expira ao subir"],
+    props:'<path class="prop" d="M34 150 H150" style="stroke-width:4"/>',db:"none",
+    A:side([48,138],[60,140],[100,142],[[[118,120],[134,146]],[[122,118],[138,146]]],[[[64,128],[52,132]]]),
+    B:side([55,122],[66,127],[100,142],[[[118,120],[134,146]],[[122,118],[138,146]]],[[[70,114],[58,118]]])}
+};
+const APP_V=5;
+const WORKOUTS=[
+  {id:"s1",name:"Semana 1",sub:"Força com halteres, 4 blocos em superset",
+   blocks:[["incline","split"],["row","sumo"],["deadlift","triceps"],["pulldown","crunch"]]}
+  // novos treinos: adicionar aqui outro objeto com id único e os blocos de exercícios
+];
+let W=WORKOUTS[0];
+
+const lerp=(a,b,t)=>Array.isArray(a)?a.map((v,i)=>lerp(v,b[i],t)):(a!==null&&typeof a==="object")?Object.fromEntries(Object.keys(a).map(k=>[k,lerp(a[k],b[k],t)])):a+(b-a)*t;
+function armFK(A,B,sh,t){
+  const seg=(p,q)=>[Math.hypot(q[0]-p[0],q[1]-p[1]),Math.atan2(q[1]-p[1],q[0]-p[0])];
+  const ang=(a,b)=>{let d=b-a;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;return a+d*t};
+  const [l1a,a1a]=seg(A[0],A[1]),[l1b,a1b]=seg(B[0],B[1]),[l2a,a2a]=seg(A[1],A[2]),[l2b,a2b]=seg(B[1],B[2]);
+  const l1=l1a+(l1b-l1a)*t,a1=ang(a1a,a1b),l2=l2a+(l2b-l2a)*t,a2=ang(a2a,a2b);
+  const e=[sh[0]+l1*Math.cos(a1),sh[1]+l1*Math.sin(a1)];
+  return [sh,e,[e[0]+l2*Math.cos(a2),e[1]+l2*Math.sin(a2)]];
+}
+// ritmo: sobe 1,2 s, pausa 0,3 s, desce 1,4 s, pausa 0,3 s
+function tempo(ms){const c=ms%3200,ez=x=>(1-Math.cos(Math.PI*x))/2;
+  if(c<1200)return ez(c/1200);if(c<1500)return 1;if(c<2900)return 1-ez((c-1500)/1400);return 0}
+const pts=l=>l.map(q=>q[0].toFixed(1)+","+q[1].toFixed(1)).join(" ");
+
+function drawFig(key,t,side){
+  const ex=EX[key], p=lerp(ex.A,ex.B,t);
+  p.arms=p.arms.map((a,i)=>armFK(ex.A.arms[i],ex.B.arms[i],a[0],t));
+  let o='<line class="floor" x1="20" y1="149" x2="170" y2="149"/>'+ex.props;
+  if(ex.db==="bar"){const h=p.arms[0][2];o+=`<line class="cable" x1="104" y1="6" x2="${h[0]}" y2="${h[1]}"/><circle class="propf" cx="104" cy="6" r="3.5"/>`}
+  p.legs.forEach((l,i)=>o+=`<polyline class="limb${!ex.front&&i===(side==="dir"?1:0)?" far":""}" points="${pts(l)}"/>`);
+  if(ex.front){o+=`<line class="limb" x1="${p.legs[0][0][0]}" y1="${p.legs[0][0][1]}" x2="${p.legs[1][0][0]}" y2="${p.legs[1][0][1]}"/><line class="limb" x1="${p.arms[0][0][0]}" y1="${p.arms[0][0][1]}" x2="${p.arms[1][0][0]}" y2="${p.arms[1][0][1]}"/>`}
+  o+=`<line class="limb" x1="${p.s[0]}" y1="${p.s[1]}" x2="${p.p[0]}" y2="${p.p[1]}"/>`;
+  p.arms.forEach(a=>o+=`<polyline class="limb" points="${pts(a)}"/>`);
+  o+=`<circle class="head" cx="${p.h[0]}" cy="${p.h[1]}" r="8"/>`;
+  if(ex.db==="hands") p.arms.forEach(a=>{const h=a[2];o+=`<circle class="db" cx="${h[0]}" cy="${h[1]}" r="5.5"/>`});
+  if(ex.db==="mid"){const y=p.arms[0][2][1];o+=`<rect class="db" x="93" y="${y-1}" width="14" height="5" rx="1.5"/><rect class="db" x="98" y="${y}" width="4" height="18"/><rect class="db" x="93" y="${y+15}" width="14" height="5" rx="1.5"/>`}
+  if(ex.db==="bar"){const h=p.arms[0][2];o+=`<line class="limb" style="stroke-width:3.5" x1="${h[0]-16}" y1="${h[1]}" x2="${h[0]+16}" y2="${h[1]}"/>`}
+  fig.innerHTML=o;
+}
+
+/* ---------- Settings ---------- */
+const $=id=>document.getElementById(id);
+const fig=$("fig");
+let S={sound:true,voice:true,wk:{},cfg:{}};
+try{Object.assign(S,JSON.parse(localStorage.getItem("treino-cfg")||"{}"))}catch(e){}
+const save=()=>{try{localStorage.setItem("treino-cfg",JSON.stringify(S))}catch(e){}};
+const FIELDS=[["rest","Pausa (s)",5,0,120],["trans","Transição entre blocos (s)",15,0,300],["rounds","Voltas por bloco",1,1,10],["prep","Preparação inicial (s)",5,0,60]];
+const REP_S=3.2; // segundos por repetição no ritmo guia
+const fmt=s=>{s=Math.max(0,Math.round(s));return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")};
+S.cfg=S.cfg||{};S.wk=S.wk||{};
+function wk(){const o=S.wk[W.id]=S.wk[W.id]||{},d={rest:10,trans:60,rounds:4,prep:10};
+  for(const k in d)if(typeof o[k]!=="number")o[k]=d[k];return o}
+function cfg(k){
+  const key=W.id+":"+k;let c=S.cfg[key];if(!c||!Array.isArray(c.time)||!Array.isArray(c.reps))c=S.cfg[key]={mode:"time",time:[],reps:[]};
+  for(const m of ["time","reps"]){const a=c[m],def=m==="time"?45:10;while(a.length<wk().rounds)a.push(a.length?a[a.length-1]:def)}
+  return c;
+}
+function exCard(k){
+  const c=cfg(k),v=c[c.mode],u=c.mode==="time"?"s":"reps",mx=c.mode==="time"?600:100;
+  const head=k==="__all"?"":`<div class="ex">${EX[k].name}<small>${EX[k].pt}${EX[k].alt?", alterna a perna em cada volta":""}</small></div>`;
+  return `<div class="exc" data-k="${k}">${head}
+  <div class="seg" role="group" aria-label="Modo"><button data-m="time" class="${c.mode==="time"?"on":""}">Tempo</button><button data-m="reps" class="${c.mode==="reps"?"on":""}">Repetições</button></div>
+  <div class="vals">${v.slice(0,wk().rounds).map((x,r)=>`<label><span>V${r+1}</span><input type="number" inputmode="numeric" min="1" max="${mx}" value="${x}" data-r="${r}" aria-label="Volta ${r+1}"><em>${u}</em></label>`).join("")}</div></div>`;
+}
+function renderBlocks(){
+  $("blocks").innerHTML=`<div class="block general"><div class="bh">Todos os exercícios<span>aplica-se a todos</span></div>${exCard("__all")}</div>`+W.blocks.map((b,i)=>`<div class="block"><div class="bh">Bloco ${i+1}<span>${wk().rounds} voltas em superset</span></div>${b.map(exCard).join("")}</div>`).join("");
+  updTotal();
+}
+function rerenderEx(k){
+  if(k==="__all"){const g=cfg("__all");Object.keys(EX).forEach(x=>{const c=cfg(x);c.mode=g.mode;c[g.mode]=g[g.mode].slice()});save();renderBlocks();return}
+  document.querySelector(`.exc[data-k="${k}"]`).outerHTML=exCard(k);updTotal()}
+$("blocks").addEventListener("click",e=>{const b=e.target.closest(".seg button");if(!b)return;const k=b.closest(".exc").dataset.k;cfg(k).mode=b.dataset.m;save();rerenderEx(k)});
+$("blocks").addEventListener("change",e=>{const i=e.target.closest("input");if(!i)return;
+  const k=i.closest(".exc").dataset.k,c=cfg(k),a=c[c.mode],r=+i.dataset.r,old=a[r];
+  let v=Math.round(+i.value);if(!(v>0))v=old;v=Math.min(+i.max,v);a[r]=v;
+  if(r===0)for(let j=1;j<wk().rounds;j++)if(a[j]===old)a[j]=v;
+  save();rerenderEx(k)});
+function estimate(w){const prev=W;W=w;const st=build();W=prev;
+  return (st.some(x=>x.reps)?"~":"")+fmt(st.reduce((a,x)=>a+x.est,0))}
+function renderHome(){
+  $("wlist").innerHTML=WORKOUTS.map(w=>`<button class="wcard" data-w="${w.id}"><span><b>${w.name}</b><small>${w.sub}</small></span><span class="meta">${estimate(w)}</span></button>`).join("")+
+    `<p class="hint">Pede-me para acrescentar o treino da próxima semana e ele aparece aqui.<br>Versão ${APP_V}</p>`;
+  $("wlist").querySelectorAll(".wcard").forEach(b=>b.onclick=()=>openWorkout(b.dataset.w));
+}
+function openWorkout(id){W=WORKOUTS.find(w=>w.id===id)||WORKOUTS[0];$("wName").textContent=W.name;renderSetup();show("setup")}
+function renderSetup(){
+  $("settings").innerHTML=FIELDS.map(([k,l])=>`<div class="row"><label>${l}</label><div class="stepper"><button data-k="${k}" data-d="-1" aria-label="Menos">−</button><output id="o_${k}">${wk()[k]}</output><button data-k="${k}" data-d="1" aria-label="Mais">+</button></div></div>`).join("")+
+   `<div class="row"><label for="snd">Sinais sonoros</label><input type="checkbox" class="switch" id="snd" ${S.sound?"checked":""}></div>`+
+   `<div class="row"><label for="vc">Voz a anunciar o exercício seguinte</label><input type="checkbox" class="switch" id="vc" ${S.voice?"checked":""}></div>`;
+  $("settings").querySelectorAll(".stepper button").forEach(b=>b.onclick=()=>{
+    const f=FIELDS.find(x=>x[0]===b.dataset.k),o=wk();o[f[0]]=Math.min(f[4],Math.max(f[3],o[f[0]]+f[2]*+b.dataset.d));
+    $("o_"+f[0]).textContent=o[f[0]];save();if(f[0]==="rounds")renderBlocks();else updTotal();});
+  $("snd").onchange=e=>{S.sound=e.target.checked;save()};
+  $("vc").onchange=e=>{S.voice=e.target.checked;save()};
+  renderBlocks();
+}
+const updTotal=()=>{const st=build();$("total").textContent=(st.some(x=>x.reps)?"~":"")+fmt(st.reduce((a,s)=>a+s.est,0))};
+
+/* ---------- Timeline ---------- */
+function build(){
+  const st=[];
+  if(wk().prep>0) st.push({t:"prep",d:wk().prep,ex:W.blocks[0][0],b:0,r:1});
+  W.blocks.forEach((bl,bi)=>{for(let r=1;r<=wk().rounds;r++){bl.forEach((ex,i)=>{
+    const c=cfg(ex),v=c[c.mode][r-1],w={t:"work",ex,b:bi,r,side:EX[ex].alt?(r%2?"esq":"dir"):null};
+    if(c.mode==="reps"){w.reps=v;w.est=v*REP_S}else w.d=v;
+    st.push(w);
+    const lastI=i===bl.length-1,lastR=r===wk().rounds,lastB=bi===W.blocks.length-1;
+    const nx=!lastI?bl[i+1]:!lastR?bl[0]:!lastB?W.blocks[bi+1][0]:null;
+    if(!nx) return;
+    const nb=lastI&&lastR?bi+1:bi, nr=lastI?(lastR?1:r+1):r, ns=EX[nx].alt?(nr%2?"esq":"dir"):null;
+    if(lastI&&lastR&&wk().trans>0) st.push({t:"trans",d:wk().trans,ex:nx,b:nb,r:nr,side:ns});
+    else if(wk().rest>0) st.push({t:"rest",d:wk().rest,ex:nx,b:nb,r:nr,side:ns});
+  })}});
+  st.forEach(x=>{if(x.est==null)x.est=x.d});
+  return st;
+}
+
+/* ---------- Audio / voz / ecrã ---------- */
+let ac=null;
+function beep(f,d,v=.35){if(!S.sound||!ac)return;const t=ac.currentTime,o=ac.createOscillator(),g=ac.createGain();o.type="sine";o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(ac.destination);o.start(t);o.stop(t+d+.05)}
+function speak(txt){if(!S.voice||!("speechSynthesis" in window))return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(txt);u.lang="pt-PT";const vs=speechSynthesis.getVoices();const v=vs.find(v=>v.lang==="pt-PT")||vs.find(v=>/^pt/i.test(v.lang));if(v)u.voice=v;u.rate=1.05;speechSynthesis.speak(u)}catch(e){}}
+let wl=null;
+async function lock(){
+  vidOn(); // vídeo mudo em loop: reserva para quando o wake lock não está disponível
+  if(wl||!("wakeLock" in navigator))return;
+  try{
+    wl=await navigator.wakeLock.request("screen");
+    wl.addEventListener("release",()=>{wl=null;if(running)setTimeout(lock,800)});
+  }catch(e){wl=null}
+}
+function vidOn(){const v=$("nosleep");if(v){v.muted=true;const p=v.play();p&&p.catch&&p.catch(()=>{})}}
+function unlock(){try{wl&&wl.release()}catch(e){}wl=null;const v=$("nosleep");if(v)try{v.pause()}catch(e){}}
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&running){lock();vidOn()}});
+addEventListener("touchstart",()=>{if(running)lock()},{passive:true});
+
+/* ---------- Motor ---------- */
+const LABEL={work:"Exercício",rest:"Pausa",trans:"Transição",prep:"Prepara-te"};
+const PLAY='<path d="M7 4v16l13-8z"/>',PAUSE='<path d="M7 5h4v14H7zM13 5h4v14h-4z"/>',CHECK='<path d="M9.5 16.2 5.3 12l-1.4 1.4 5.6 5.6L20.1 8.4 18.7 7z"/>';
+let steps=[],idx=0,stepStart=0,paused=false,pauseAt=0,fired={},running=false,t0=0,animT0=0;
+const now=()=>performance.now();
+const elapsed=()=>((paused?pauseAt:now())-stepStart)/1000;
+
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on",s.id===id))}
+function setPhaseColors(t){const m={work:["--work","--work-ink"],rest:["--rest","--rest-ink"],trans:["--trans","--trans-ink"],prep:["--prep","--prep-ink"]}[t];$("band").style.setProperty("--phase",`var(${m[0]})`);$("band").style.setProperty("--phase-ink",`var(${m[1]})`)}
+function setMainIcon(){
+  const reps=!!(steps[idx]&&steps[idx].reps);
+  $("play").setAttribute("aria-label",reps?"Feito":paused?"Retomar":"Pausar");
+  $("playIcon").innerHTML=reps?CHECK:paused?PLAY:PAUSE;
+  $("play").classList.toggle("done",reps);
+}
+
+function enter(i,quiet){
+  idx=i;fired={};
+  const st=steps[idx],ex=EX[st.ex];
+  if(st.reps&&paused){stepStart+=now()-pauseAt;paused=false}
+  setMainIcon();
+  setPhaseColors(st.t);
+  $("phase").textContent=LABEL[st.t];
+  $("pBlock").textContent=`Bloco ${st.b+1}/${W.blocks.length}`;
+  $("pRound").textContent=`Volta ${st.r}/${wk().rounds}`;
+  $("exName").textContent=ex.name;
+  const leg=st.side?(st.side==="esq"?"perna esquerda":"perna direita"):"";
+  let target="";
+  if(st.t!=="work"){const nw=steps.slice(idx+1).find(x=>x.t==="work");if(nw)target=nw.reps?`${nw.reps} reps`:`${nw.d} s`}
+  $("exPt").textContent=(st.t==="work"?"":"A seguir: ")+ex.pt+(leg?", "+leg:"")+(target?`, ${target}`:"");
+  if(leg&&st.t==="work"){$("banner").textContent=leg[0].toUpperCase()+leg.slice(1);$("banner").classList.add("show")}else $("banner").classList.remove("show");
+  $("cues").innerHTML=ex.cues.map(c=>`<li>${c}</li>`).join("");
+  $("stage").classList.toggle("dim",st.t!=="work");
+  $("sub").innerHTML="";
+  let n=null;for(let j=idx+1;j<steps.length;j++){if(steps[j].t==="work"){n=steps[j];break}}
+  $("next").innerHTML=n?`Depois: <b>${EX[n.ex].name}</b>`:"Último exercício do treino";
+  animT0=now();
+  if(!quiet){
+    const L=leg?", "+leg:"";
+    if(st.t==="work") speak(st.reps?`Vai, ${st.reps} repetições${L}`:"Vai"+L);
+    else if(st.t==="trans") speak("Bloco concluído. A seguir, "+ex.pt+L);
+    else speak("A seguir, "+ex.pt+L);
+  }
+}
+function go(i){if(i<0)i=0;if(i>=steps.length)return finish();stepStart=now();if(paused)pauseAt=stepStart;enter(i)}
+
+function loop(){
+  if(!running)return;
+  let st=steps[idx],e=elapsed();
+  if(!st.reps&&!paused&&st.d-e<=0){
+    beep(st.t==="work"?660:1320,.45,.4);
+    // avança mantendo a sincronização (também recupera se o ecrã esteve em segundo plano)
+    let base=stepStart+st.d*1000,k=idx+1,late=now()-base>1500;
+    while(k<steps.length&&!steps[k].reps&&now()-base>=steps[k].d*1000){base+=steps[k].d*1000;k++}
+    if(k>=steps.length){finish();return}
+    stepStart=base;enter(k,late);st=steps[idx];e=elapsed();
+  }
+  if(st.reps){
+    const g=Math.min(st.reps,Math.floor((now()-animT0)/(REP_S*1000))+1);
+    $("clock").innerHTML=`${st.reps}<span class="unit">reps</span>`;
+    $("sub").innerHTML=`Ritmo guia: ${g}/${st.reps}<br>${fmt(e)}`;
+    $("stepbar").style.width=Math.min(100,e/st.est*100)+"%";
+    if(e>=st.est&&!fired.g){fired.g=1;beep(990,.15);setTimeout(()=>beep(990,.15),180)}
+  }else{
+    const rem=st.d-e,sec=Math.ceil(rem);
+    if(!paused&&sec<=3&&sec>=1&&!fired[sec]){fired[sec]=1;beep(880,.12)}
+    $("clock").textContent=rem>=60?fmt(Math.ceil(rem)):Math.max(0,Math.ceil(rem));
+    $("stepbar").style.width=Math.min(100,e/st.d*100)+"%";
+  }
+  const done=steps.slice(0,idx).reduce((a,s)=>a+s.est,0)+Math.min(e,st.est),tot=steps.reduce((a,s)=>a+s.est,0);
+  $("overall").style.width=(done/tot*100)+"%";
+  drawFig(st.ex,paused?0:tempo(now()-animT0),st.side);
+  requestAnimationFrame(loop);
+}
+
+function setPaused(p){
+  if(p===paused)return;
+  if(p){pauseAt=now()}else{stepStart+=now()-pauseAt;animT0+=now()-pauseAt}
+  paused=p;setMainIcon();
+}
+function mainBtn(){if(running&&!wl)lock();const st=steps[idx];if(st&&st.reps){beep(1320,.3,.4);go(idx+1)}else setPaused(!paused)}
+function start(){
+  try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();ac.resume()}catch(e){}
+  if("speechSynthesis" in window){try{speechSynthesis.getVoices()}catch(e){}}
+  steps=build();paused=false;running=true;t0=Date.now();
+  show("run");lock();vidOn();go(0);requestAnimationFrame(loop);
+}
+function finish(){
+  running=false;unlock();speak("Treino concluído. Bom trabalho!");beep(1320,.6,.4);
+  $("doneTxt").textContent=`Tempo total: ${fmt((Date.now()-t0)/1000)}. ${W.blocks.length} blocos, ${wk().rounds} voltas cada.`;
+  show("done");
+}
+
+$("start").onclick=start;
+$("play").onclick=mainBtn;
+$("skip").onclick=()=>go(idx+1);
+$("prev").onclick=()=>go(elapsed()>3?idx:idx-1);
+$("quit").onclick=()=>{if(confirm("Terminar o treino?")){running=false;unlock();try{speechSynthesis.cancel()}catch(e){}show("setup")}};
+$("back").onclick=()=>{renderHome();show("home")};
+$("again").onclick=()=>{renderHome();show("home")};
+document.addEventListener("keydown",e=>{if(!running)return;if(e.code==="Space"){e.preventDefault();mainBtn()}if(e.code==="ArrowRight")go(idx+1);if(e.code==="ArrowLeft")go(elapsed()>3?idx:idx-1)});
+
+renderHome();
+
+// Atualizacao automatica: procura versao nova no arranque e sempre que a app volta ao ecra
+if("serviceWorker" in navigator){
+  let reloading=false;
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{if(!reloading&&!running){reloading=true;location.reload()}});
+  addEventListener("load",()=>{
+    navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).then(r=>{
+      r.update();
+      addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&!running)r.update()});
+      setInterval(()=>{if(!running)r.update()},60*60*1000);
+    }).catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
