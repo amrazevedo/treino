@@ -306,6 +306,11 @@ const EX={
     props:"",
     A:{h:[100,26],s:[100,38],p:[100,78],legs:[[[94,78],[92,112],[90,148]],[[106,78],[108,112],[110,148]]],arms:[[[90,40],[88,58],[88,78]],[[110,40],[112,58],[112,78]]]},
     B:{h:[100,26],s:[100,38],p:[100,78],legs:[[[94,78],[92,112],[90,148]],[[106,78],[108,112],[110,148]]],arms:[[[90,40],[70,42],[52,44]],[[110,40],[130,42],[148,44]]]}},
+  inclineshoulderpress:{name:"Incline Dumbbell Shoulder Press",g:"ombros",pt:"Press de ombros no banco inclinado",db:"hands",
+    cues:["Banco a 60–75°, costas apoiadas","Halteres à altura das orelhas no ponto baixo","Sobe até os braços esticarem, sem trancar os cotovelos"],
+    props:'<path class="prop" d="M106 118 L86 78"/><path class="prop" d="M100 120 H128"/><path class="prop thin" d="M104 120 V148 M124 120 V148"/>',
+    A:side([79,74],[82,86],[98,118],[[[120,118],[122,148]],[[124,116],[128,148]]],[[[66,100],[74,80]]]),
+    B:side([79,74],[82,86],[98,118],[[[120,118],[122,148]],[[124,116],[128,148]]],[[[78,62],[80,40]]])},
   curl:{name:"Dumbbell Biceps Curl",g:"bracos",pt:"Rosca bíceps com halteres",db:"hands",
     cues:["Cotovelos junto ao tronco","Sobe sem balançar as costas","Desce controlado até esticar"],
     props:"",
@@ -351,11 +356,11 @@ const EX={
     props:'<path class="prop" d="M70 122 H118"/><path class="prop thin" d="M92 122 V148 M136 94 V126 M60 148 H150"/>',
     A:side([100,66],[98,78],[92,116],[[[116,110],[132,118]],[[120,108],[136,116]]],[[[118,92],[132,104]]]),
     B:side([98,62],[96,74],[92,116],[[[116,110],[132,118]],[[120,108],[136,116]]],[[[84,86],[104,98]]])},
-  legpress:{name:"Machine Leg Press",g:"pernas",pt:"Prensa de pernas na máquina",db:"none",
-    cues:["Costas e lombar bem apoiadas no encosto","Desce até cerca de 90° no joelho","Empurra com o calcanhar, sem bloquear os joelhos"],
-    props:'<path class="prop" d="M40 128 L80 110 H96"/><path class="prop thin" d="M96 100 L152 46 M40 128 V148 H120"/>',
-    A:side([42,119],[54,116],[86,108],[[[88,74],[112,90]],[[92,78],[116,94]]],[[[64,124],[76,132]]]),
-    B:side([42,119],[54,116],[86,108],[[[113,84],[140,58]],[[117,88],[144,62]]],[[[64,124],[76,132]]])},
+  legpress:{name:"Seated Leg Press",g:"pernas",pt:"Prensa de pernas sentado",db:"none",
+    cues:["Costas e lombar apoiadas no encosto","Desce até cerca de 90° no joelho, sem levantar a anca","Empurra com o calcanhar, sem bloquear os joelhos"],
+    props:'<path class="prop" d="M58 72 L62 116 H98"/><path class="prop thin" d="M62 116 V148 M100 118 H150 M148 96 V140"/>',
+    A:side([73,64],[76,76],[88,112],[[[116,92],[110,120]],[[120,96],[114,124]]],[[[72,96],[86,104]]]),
+    B:side([73,64],[76,76],[88,112],[[[118,112],[146,116]],[[122,116],[150,120]]],[[[72,96],[86,104]]])},
   cabledeadlift:{name:"Cable Deadlift",g:"pernas",pt:"Peso morto no cabo",db:"none",cable:[150,146],
     cues:["Coluna neutra, anca para trás","Pega a raspar as pernas","Sobe a contrair os glúteos, sem puxar com os braços"],
     props:'<path class="prop thin" d="M150 120 V148"/>',
@@ -377,7 +382,7 @@ const EX={
     A:side([48,138],[60,140],[100,142],[[[118,120],[134,146]],[[122,118],[138,146]]],[[[64,128],[52,132]]]),
     B:side([55,122],[66,127],[100,142],[[[118,120],[134,146]],[[122,118],[138,146]]],[[[70,114],[58,118]]])}
 };
-const APP_V=9;
+const APP_V=10;
 const WORKOUTS=[
   {id:"s1",name:"Semana 1",sub:"Força com halteres, 4 blocos em superset",
    blocks:[["incline","split"],["row","sumo"],["deadlift","triceps"],["pulldown","crunch"]]},
@@ -385,7 +390,7 @@ const WORKOUTS=[
    blocks:[
      {r:3,ex:["seatedrow","legpress"]},
      {r:3,ex:["cabledeadlift","renegade"]},
-     {r:3,ex:[{k:"shoulderpress",vars:["Simultâneo","Unilateral","Alternado"]},"deadlift"]},
+     {r:3,ex:[{k:"inclineshoulderpress",vars:["Simultâneo","Unilateral","Alternado"]},"deadlift"]},
      {r:2,ex:[{k:"snatch",vars:["Unilateral","Simultâneo"]}]}
    ]}
   // novos treinos: adicionar aqui outro objeto com id único e os blocos de exercícios
