@@ -69,8 +69,11 @@ button{touch-action:manipulation;cursor:pointer}
 .overlay.on{display:flex}
 .sheet{background:var(--bg);width:100%;max-width:560px;margin:0 auto;border-radius:18px 18px 0 0;padding:14px 16px calc(16px + env(safe-area-inset-bottom,0px));max-height:82vh;display:flex;flex-direction:column;gap:10px}
 .shead{display:flex;gap:8px;align-items:center}
-.thumb{width:84px;height:84px;flex:none;background:var(--bg);border-radius:10px}
-.prow{display:flex;gap:10px;align-items:center;border-top:1px solid var(--line);padding-top:8px}
+.thumb{width:108px;height:108px;flex:none;background:var(--bg);border-radius:10px}
+.thumb .limb{stroke-width:7}
+.thumb .head{stroke-width:5.5}
+.thumb .prop{stroke-width:8}
+.prow{display:flex;gap:10px;align-items:center;border-top:1px solid var(--line);padding-top:10px;width:100%;background:transparent;border-left:0;border-right:0;border-bottom:0;text-align:left;padding-left:0;padding-right:0}
 .prow .pmeta{flex:1;min-width:0}
 .prow b{font-weight:600;line-height:1.2;display:block}
 .prow small{color:var(--muted);font-size:12px;display:block}
@@ -79,6 +82,9 @@ button{touch-action:manipulation;cursor:pointer}
 .pgroup{font-family:var(--display);font-weight:700;font-size:18px;color:var(--muted);margin-top:6px}
 .pitem{background:var(--panel);border:0;border-radius:12px;padding:10px 12px;text-align:left;font-weight:600;line-height:1.2}
 .pitem small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+#exFig{width:100%;height:46vh;max-height:340px;background:var(--panel);border-radius:14px}
+.exv h2{font-family:var(--display);font-weight:800;font-size:26px;margin:0;line-height:1}
+.exv p{margin:2px 0 0;color:var(--muted);font-size:14px}
 .hint{color:var(--muted);font-size:13px;margin:0}
 .title h1{font-family:var(--display);font-weight:800;font-size:clamp(32px,9vw,44px);line-height:.98;margin:6px 0 8px;letter-spacing:-.01em}
 .title p{margin:0 0 6px;color:var(--muted);font-size:15px;line-height:1.4}
@@ -208,6 +214,14 @@ button{touch-action:manipulation;cursor:pointer}
   <button class="go" id="bSave">Guardar treino</button>
   <button class="lnk danger" id="bDel">Eliminar este treino</button>
 </section>
+
+<div class="overlay" id="exView">
+  <div class="sheet">
+    <div class="shead"><span class="exv"><h2 id="evName"></h2><p id="evPt"></p></span><button class="lnk" id="evClose">Fechar</button></div>
+    <svg id="exFig" viewBox="20 0 150 156" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
+    <ul class="cues" id="evCues"></ul>
+  </div>
+</div>
 
 <div class="overlay" id="picker">
   <div class="sheet">
@@ -398,7 +412,7 @@ const EX={
     A:side([48,138],[60,140],[100,142],[[[118,120],[134,146]],[[122,118],[138,146]]],[[[64,128],[52,132]]]),
     B:side([55,122],[66,127],[100,142],[[[118,120],[134,146]],[[122,118],[138,146]]],[[[70,114],[58,118]]])}
 };
-const APP_V=11;
+const APP_V=12;
 const WORKOUTS=[
   {id:"s1",name:"Semana 1",sub:"Força com halteres, 4 blocos em superset",
    blocks:[["incline","split"],["row","sumo"],["deadlift","triceps"],["pulldown","crunch"]]},
@@ -562,19 +576,29 @@ function renderPreview(){
           vv=v.slice(0,R),same=vv.every(n=>n===vv[0]),
           tgt=(same?String(vv[0]):vv.join("/"))+(c.mode==="time"?"s":" reps"),
           extra=[ex.alt?"alterna o lado":"",x.vars?x.vars.slice(0,R).join(", "):""].filter(Boolean).join(" — ");
-        return `<div class="prow"><svg class="thumb" data-k="${x.k}" viewBox="20 0 150 156"></svg><span class="pmeta"><b>${ex.name}</b><small>${ex.pt}${extra?" — "+extra:""}</small></span><span class="tgt">${tgt}</span></div>`;
+        return `<button class="prow" data-ex="${x.k}"><svg class="thumb" data-k="${x.k}" viewBox="20 0 150 156"></svg><span class="pmeta"><b>${ex.name}</b><small>${ex.pt}${extra?" — "+extra:""}</small></span><span class="tgt">${tgt}</span></button>`;
       }).join("")+`</div>`;
   }).join("");
+  $("pvList").querySelectorAll("[data-ex]").forEach(b=>b.onclick=()=>openEx(b.dataset.ex));
   pvOn=true;pvLoop();
 }
+let evKey=null;
+function openEx(k){evKey=k;const ex=EX[k];
+  $("evName").textContent=ex.name;$("evPt").textContent=ex.pt;
+  $("evCues").innerHTML=ex.cues.map(c=>`<li>${c}</li>`).join("");
+  $("exView").classList.add("on");if(!pvOn){pvOn=true;pvLoop()}}
+function closeEx(){evKey=null;$("exView").classList.remove("on")}
 function pvLoop(){
   if(!pvOn)return;
   const t=tempo(now());
+  if(evKey)$("exFig").innerHTML=figSVG(evKey,t);
   $("pvList").querySelectorAll(".thumb").forEach(el=>{el.innerHTML=figSVG(el.dataset.k,t)});
   requestAnimationFrame(pvLoop);
 }
 $("prevBtn").onclick=()=>{renderPreview();show("preview")};
-$("pvBack").onclick=()=>{pvOn=false;show("setup")};
+$("pvBack").onclick=()=>{pvOn=false;closeEx();show("setup")};
+$("evClose").onclick=closeEx;
+$("exView").addEventListener("click",e=>{if(e.target.id==="exView")closeEx()});
 $("newW").onclick=newWorkout;
 $("bBack").onclick=()=>{renderHome();show("home")};
 $("bSave").onclick=()=>{
