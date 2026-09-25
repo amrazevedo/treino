@@ -146,15 +146,15 @@ button{touch-action:manipulation;cursor:pointer}
 .body{flex:1;display:flex;flex-direction:column;padding:12px 18px 10px;gap:8px;min-height:0}
 .stage{position:relative;flex:1;min-height:170px;display:flex;align-items:center;justify-content:center}
 #fig{width:100%;height:100%;max-height:300px}
-#fig .limb{fill:none;stroke:var(--ink);stroke-width:5.5;stroke-linecap:round;stroke-linejoin:round}
-#fig .far{opacity:.35}
-#fig .prop{fill:none;stroke:var(--prop);stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
-#fig .thin{stroke-width:3}
-#fig .propf{fill:var(--prop)}
-#fig .floor{stroke:var(--line);stroke-width:2}
-#fig .head{fill:var(--panel);stroke:var(--ink);stroke-width:4}
-#fig .db{fill:var(--db)}
-#fig .cable{stroke:var(--muted);stroke-width:1.5}
+.fx .limb{fill:none;stroke:var(--ink);stroke-width:5.5;stroke-linecap:round;stroke-linejoin:round}
+.fx .far{opacity:.35}
+.fx .prop{fill:none;stroke:var(--prop);stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
+.fx .thin{stroke-width:3}
+.fx .propf{fill:var(--prop)}
+.fx .floor{stroke:var(--line);stroke-width:2}
+.fx .head{fill:var(--panel);stroke:var(--ink);stroke-width:4}
+.fx .db{fill:var(--db)}
+.fx .cable{stroke:var(--muted);stroke-width:1.5}
 .stage.dim #fig{opacity:.55}
 .banner{position:absolute;top:8px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);font-family:var(--display);font-weight:700;font-size:22px;padding:4px 14px;border-radius:10px;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
 .banner.show{opacity:1}
@@ -216,7 +216,7 @@ button{touch-action:manipulation;cursor:pointer}
 <div class="overlay" id="exView">
   <div class="sheet">
     <div class="shead"><span class="exv"><h2 id="evName"></h2><p id="evPt"></p></span><button class="lnk" id="evClose">Fechar</button></div>
-    <svg id="exFig" viewBox="20 0 150 156" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
+    <svg id="exFig" class="fx" viewBox="20 0 150 156" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
     <ul class="cues" id="evCues"></ul>
   </div>
 </div>
@@ -254,7 +254,7 @@ button{touch-action:manipulation;cursor:pointer}
   <div class="overall"><i id="overall"></i></div>
   <div class="body">
     <div class="stage" id="stage">
-      <svg id="fig" viewBox="20 0 150 156" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
+      <svg id="fig" class="fx" viewBox="20 0 150 156" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
       <div class="banner" id="banner">Troca de perna</div>
     </div>
     <div class="name"><h2 id="exName"></h2><p id="exPt"></p></div>
@@ -410,7 +410,7 @@ const EX={
     A:side([48,138],[60,140],[100,142],[[[118,120],[134,146]],[[122,118],[138,146]]],[[[64,128],[52,132]]]),
     B:side([55,122],[66,127],[100,142],[[[118,120],[134,146]],[[122,118],[138,146]]],[[[70,114],[58,118]]])}
 };
-const APP_V=13;
+const APP_V=14;
 const WORKOUTS=[
   {id:"s1",name:"Semana 1",sub:"Força com halteres, 4 blocos em superset",
    blocks:[["incline","split"],["row","sumo"],["deadlift","triceps"],["pulldown","crunch"]]},
@@ -574,7 +574,7 @@ function renderPreview(){
           vv=v.slice(0,R),same=vv.every(n=>n===vv[0]),
           tgt=(same?String(vv[0]):vv.join("/"))+(c.mode==="time"?"s":" reps"),
           extra=[ex.alt?"alterna o lado":"",x.vars?x.vars.slice(0,R).join(", "):""].filter(Boolean).join(" — ");
-        return `<button class="prow" data-ex="${x.k}"><svg class="thumb" data-k="${x.k}" viewBox="20 0 150 156" preserveAspectRatio="xMidYMid meet"></svg><span class="pline"><span class="pmeta"><b>${ex.name}</b><small>${ex.pt}${extra?" — "+extra:""}</small></span><span class="tgt">${tgt}</span></span></button>`;
+        return `<button class="prow" data-ex="${x.k}"><svg class="thumb fx" data-k="${x.k}" viewBox="20 0 150 156" preserveAspectRatio="xMidYMid meet"></svg><span class="pline"><span class="pmeta"><b>${ex.name}</b><small>${ex.pt}${extra?" — "+extra:""}</small></span><span class="tgt">${tgt}</span></span></button>`;
       }).join("")+`</div>`;
   }).join("");
   $("pvList").querySelectorAll("[data-ex]").forEach(b=>b.onclick=()=>openEx(b.dataset.ex));
