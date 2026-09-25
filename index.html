@@ -57,6 +57,7 @@ button{touch-action:manipulation;cursor:pointer}
 .tin{width:100%;border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:12px 14px;font-size:16px}
 .lnk{border:0;background:transparent;color:var(--muted);font-weight:600;font-size:14px;padding:4px 6px}
 .lnk.danger{color:#c0392b;align-self:center}
+.bhr{color:var(--muted);font-size:13px;font-weight:500;border-top:0;padding-top:0}
 .brow{display:flex;align-items:center;gap:8px;border-top:1px solid var(--line);padding-top:8px}
 .brow span:first-child{flex:1;min-width:0;font-weight:600;line-height:1.2}
 .brow small{display:block;font-weight:400;color:var(--muted);font-size:12px}
@@ -345,20 +346,52 @@ const EX={
     props:"",
     A:side([139,116],[128,120],[100,128],[[[78,136],[54,142]],[[76,138],[50,144]]],[[[128,142],[146,144]]]),
     B:side([139,116],[128,120],[100,128],[[[78,136],[54,142]],[[76,138],[50,144]]],[[[128,142],[146,144]]])},
+  seatedrow:{name:"Seated Cable Row",g:"costas",pt:"Remada sentada no cabo",db:"none",cable:[148,118],
+    cues:["Peito alto, sem arredondar as costas","Puxa os cotovelos para trás, junto ao tronco","Aperta as omoplatas e volta com controlo"],
+    props:'<path class="prop" d="M70 122 H118"/><path class="prop thin" d="M92 122 V148 M136 94 V126 M60 148 H150"/>',
+    A:side([100,66],[98,78],[92,116],[[[116,110],[132,118]],[[120,108],[136,116]]],[[[118,92],[132,104]]]),
+    B:side([98,62],[96,74],[92,116],[[[116,110],[132,118]],[[120,108],[136,116]]],[[[84,86],[104,98]]])},
+  legpress:{name:"Machine Leg Press",g:"pernas",pt:"Prensa de pernas na máquina",db:"none",
+    cues:["Costas e lombar bem apoiadas no encosto","Desce até cerca de 90° no joelho","Empurra com o calcanhar, sem bloquear os joelhos"],
+    props:'<path class="prop" d="M40 128 L80 110 H96"/><path class="prop thin" d="M96 100 L152 46 M40 128 V148 H120"/>',
+    A:side([42,119],[54,116],[86,108],[[[88,74],[112,90]],[[92,78],[116,94]]],[[[64,124],[76,132]]]),
+    B:side([42,119],[54,116],[86,108],[[[113,84],[140,58]],[[117,88],[144,62]]],[[[64,124],[76,132]]])},
+  cabledeadlift:{name:"Cable Deadlift",g:"pernas",pt:"Peso morto no cabo",db:"none",cable:[150,146],
+    cues:["Coluna neutra, anca para trás","Pega a raspar as pernas","Sobe a contrair os glúteos, sem puxar com os braços"],
+    props:'<path class="prop thin" d="M150 120 V148"/>',
+    A:side([102,26],[101,38],[100,78],[[[100,112],[98,148]],[[103,112],[102,148]]],[[[104,58],[106,78]]]),
+    B:side([128,72],[118,76],[84,94],[[[100,118],[98,148]],[[103,118],[102,148]]],[[[118,96],[118,118]]])},
+  renegade:{name:"Renegade Row",g:"core",pt:"Remada alternada em prancha",db:"hands",
+    cues:["Prancha com halteres, pés afastados para estabilizar","Anca fixa, sem rodar o tronco","Puxa um halter de cada vez, alternando os braços"],
+    props:"",
+    A:side([141,104],[130,108],[100,118],[[[78,130],[54,142]],[[76,132],[50,144]]],[[[132,126],[134,144]],[[128,126],[130,144]]]),
+    B:side([141,104],[130,108],[100,118],[[[78,130],[54,142]],[[76,132],[50,144]]],[[[132,126],[134,144]],[[118,98],[130,116]]])},
+  snatch:{name:"Dumbbell Ground-to-Overhead",g:"full",pt:"Halter do chão a acima da cabeça",db:"hands",
+    cues:["Halter no chão entre os pés, coluna neutra na pega","Estende anca e joelhos e puxa o halter junto ao corpo","Termina com o braço todo esticado acima da cabeça","Desce controlado até pousar o halter no chão"],
+    props:"",
+    A:side([113,86],[104,92],[86,112],[[[108,128],[104,148]],[[114,126],[112,148]]],[[[106,114],[108,136]]]),
+    B:side([101,34],[100,46],[100,86],[[[99,118],[98,148]],[[102,118],[101,148]]],[[[94,28],[97,8]]])},
   crunch:{name:"Crunch",g:"core",pt:"Abdominal",
     cues:["Lombar colada ao chão","Mãos atrás da cabeça, sem puxar o pescoço","Sobe as omoplatas e expira ao subir"],
     props:'<path class="prop" d="M34 150 H150" style="stroke-width:4"/>',db:"none",
     A:side([48,138],[60,140],[100,142],[[[118,120],[134,146]],[[122,118],[138,146]]],[[[64,128],[52,132]]]),
     B:side([55,122],[66,127],[100,142],[[[118,120],[134,146]],[[122,118],[138,146]]],[[[70,114],[58,118]]])}
 };
-const APP_V=7;
+const APP_V=9;
 const WORKOUTS=[
   {id:"s1",name:"Semana 1",sub:"Força com halteres, 4 blocos em superset",
-   blocks:[["incline","split"],["row","sumo"],["deadlift","triceps"],["pulldown","crunch"]]}
+   blocks:[["incline","split"],["row","sumo"],["deadlift","triceps"],["pulldown","crunch"]]},
+  {id:"s2",name:"Semana 2",sub:"Máquinas, cabos e halteres, 4 blocos a 5 reps",mode:"reps",defReps:5,
+   blocks:[
+     {r:3,ex:["seatedrow","legpress"]},
+     {r:3,ex:["cabledeadlift","renegade"]},
+     {r:3,ex:[{k:"shoulderpress",vars:["Simultâneo","Unilateral","Alternado"]},"deadlift"]},
+     {r:2,ex:[{k:"snatch",vars:["Unilateral","Simultâneo"]}]}
+   ]}
   // novos treinos: adicionar aqui outro objeto com id único e os blocos de exercícios
 ];
 let W=WORKOUTS[0];
-const GROUPS={peito:"Peito",costas:"Costas",pernas:"Pernas",ombros:"Ombros",bracos:"Braços",core:"Core"};
+const GROUPS={full:"Corpo inteiro",peito:"Peito",costas:"Costas",pernas:"Pernas",ombros:"Ombros",bracos:"Braços",core:"Core"};
 
 const lerp=(a,b,t)=>Array.isArray(a)?a.map((v,i)=>lerp(v,b[i],t)):(a!==null&&typeof a==="object")?Object.fromEntries(Object.keys(a).map(k=>[k,lerp(a[k],b[k],t)])):a+(b-a)*t;
 function armFK(A,B,sh,t){
@@ -379,6 +412,7 @@ function drawFig(key,t,side){
   p.arms=p.arms.map((a,i)=>armFK(ex.A.arms[i],ex.B.arms[i],a[0],t));
   let o='<line class="floor" x1="20" y1="149" x2="170" y2="149"/>'+ex.props;
   if(ex.db==="bar"){const h=p.arms[0][2];o+=`<line class="cable" x1="104" y1="6" x2="${h[0]}" y2="${h[1]}"/><circle class="propf" cx="104" cy="6" r="3.5"/>`}
+  if(ex.cable){const h=p.arms[0][2],c=ex.cable;o+=`<line class="cable" x1="${c[0]}" y1="${c[1]}" x2="${h[0]}" y2="${h[1]}"/><circle class="propf" cx="${c[0]}" cy="${c[1]}" r="3.5"/><circle class="db" cx="${h[0]}" cy="${h[1]}" r="4.5"/>`}
   p.legs.forEach((l,i)=>o+=`<polyline class="limb${!ex.front&&i===(side==="dir"?1:0)?" far":""}" points="${pts(l)}"/>`);
   if(ex.front){o+=`<line class="limb" x1="${p.legs[0][0][0]}" y1="${p.legs[0][0][1]}" x2="${p.legs[1][0][0]}" y2="${p.legs[1][0][1]}"/><line class="limb" x1="${p.arms[0][0][0]}" y1="${p.arms[0][0][1]}" x2="${p.arms[1][0][0]}" y2="${p.arms[1][0][1]}"/>`}
   o+=`<line class="limb" x1="${p.s[0]}" y1="${p.s[1]}" x2="${p.p[0]}" y2="${p.p[1]}"/>`;
@@ -396,16 +430,23 @@ const fig=$("fig");
 let S={sound:true,voice:true,wk:{},cfg:{}};
 try{Object.assign(S,JSON.parse(localStorage.getItem("treino-cfg")||"{}"))}catch(e){}
 const save=()=>{try{localStorage.setItem("treino-cfg",JSON.stringify(S))}catch(e){}};
-const FIELDS=[["rest","Pausa (s)",5,0,120],["trans","Transição entre blocos (s)",15,0,300],["rounds","Voltas por bloco",1,1,10],["prep","Preparação inicial (s)",5,0,60]];
+const FIELDS=[["rest","Pausa (s)",5,0,120],["trans","Transição entre blocos (s)",15,0,300],["prep","Preparação inicial (s)",5,0,60]];
 const REP_S=3.2; // segundos por repetição no ritmo guia
 const fmt=s=>{s=Math.max(0,Math.round(s));return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")};
 S.cfg=S.cfg||{};S.wk=S.wk||{};S.custom=Array.isArray(S.custom)?S.custom:[];
 const allW=()=>WORKOUTS.concat(S.custom);
 function wk(){const o=S.wk[W.id]=S.wk[W.id]||{},d={rest:10,trans:60,rounds:4,prep:10};
-  for(const k in d)if(typeof o[k]!=="number")o[k]=d[k];return o}
+  for(const k in d)if(typeof o[k]!=="number")o[k]=d[k];
+  if(!Array.isArray(o.br))o.br=[];return o}
+const blkOf=(w,i)=>{const b=w.blocks[i];return Array.isArray(b)?{ex:b}:b};
+const items=(w,i)=>blkOf(w,i).ex.map(x=>typeof x==="string"?{k:x}:x);
+function bRounds(i){const o=wk();return typeof o.br[i]==="number"?o.br[i]:(blkOf(W,i).r||o.rounds)}
+const maxRounds=()=>W.blocks.reduce((m,_,i)=>Math.max(m,bRounds(i)),1);
+function exRounds(k){for(let i=0;i<W.blocks.length;i++)if(items(W,i).some(x=>x.k===k))return bRounds(i);return maxRounds()}
 function cfg(k){
   const key=W.id+":"+k;let c=S.cfg[key];if(!c||!Array.isArray(c.time)||!Array.isArray(c.reps))c=S.cfg[key]={mode:"time",time:[],reps:[]};
-  for(const m of ["time","reps"]){const a=c[m],def=m==="time"?45:10;while(a.length<wk().rounds)a.push(a.length?a[a.length-1]:def)}
+  if(!S.cfg[key+"|init"]){c.mode=W.mode||"time";S.cfg[key+"|init"]=1}
+  for(const m of ["time","reps"]){const a=c[m],def=m==="time"?(W.defTime||45):(W.defReps||10);while(a.length<maxRounds())a.push(a.length?a[a.length-1]:def)}
   return c;
 }
 function exCard(k){
@@ -413,20 +454,24 @@ function exCard(k){
   const head=k==="__all"?"":`<div class="ex">${EX[k].name}<small>${EX[k].pt}${EX[k].alt?", alterna a perna em cada volta":""}</small></div>`;
   return `<div class="exc" data-k="${k}">${head}
   <div class="seg" role="group" aria-label="Modo"><button data-m="time" class="${c.mode==="time"?"on":""}">Tempo</button><button data-m="reps" class="${c.mode==="reps"?"on":""}">Repetições</button></div>
-  <div class="vals">${v.slice(0,wk().rounds).map((x,r)=>`<label><span>V${r+1}</span><input type="number" inputmode="numeric" min="1" max="${mx}" value="${x}" data-r="${r}" aria-label="Volta ${r+1}"><em>${u}</em></label>`).join("")}</div></div>`;
+  <div class="vals">${v.slice(0,k==="__all"?maxRounds():exRounds(k)).map((x,r)=>`<label><span>V${r+1}</span><input type="number" inputmode="numeric" min="1" max="${mx}" value="${x}" data-r="${r}" aria-label="Volta ${r+1}"><em>${u}</em></label>`).join("")}</div></div>`;
 }
 function renderBlocks(){
-  $("blocks").innerHTML=`<div class="block general"><div class="bh">Todos os exercícios<span>aplica-se a todos</span></div>${exCard("__all")}</div>`+W.blocks.map((b,i)=>`<div class="block"><div class="bh">Bloco ${i+1}<span>${wk().rounds} voltas em superset</span></div>${b.map(exCard).join("")}</div>`).join("");
+  $("blocks").innerHTML=`<div class="block general"><div class="bh">Todos os exercícios<span>aplica-se a todos</span></div>${exCard("__all")}</div>`+
+    W.blocks.map((b,i)=>`<div class="block"><div class="bh">Bloco ${i+1}<span class="stepper"><button data-br="${i}" data-d="-1" aria-label="Menos voltas">−</button><output>${bRounds(i)} voltas</output><button data-br="${i}" data-d="1" aria-label="Mais voltas">+</button></span></div>${items(W,i).map(x=>exCard(x.k)).join("")}</div>`).join("");
   updTotal();
 }
 function rerenderEx(k){
   if(k==="__all"){const g=cfg("__all");Object.keys(EX).forEach(x=>{const c=cfg(x);c.mode=g.mode;c[g.mode]=g[g.mode].slice()});save();renderBlocks();return}
   document.querySelector(`.exc[data-k="${k}"]`).outerHTML=exCard(k);updTotal()}
-$("blocks").addEventListener("click",e=>{const b=e.target.closest(".seg button");if(!b)return;const k=b.closest(".exc").dataset.k;cfg(k).mode=b.dataset.m;save();rerenderEx(k)});
+$("blocks").addEventListener("click",e=>{
+  const br=e.target.closest("button[data-br]");
+  if(br){const i=+br.dataset.br,o=wk();o.br[i]=Math.min(10,Math.max(1,bRounds(i)+ +br.dataset.d));save();renderBlocks();return}
+  const b=e.target.closest(".seg button");if(!b)return;const k=b.closest(".exc").dataset.k;cfg(k).mode=b.dataset.m;save();rerenderEx(k)});
 $("blocks").addEventListener("change",e=>{const i=e.target.closest("input");if(!i)return;
   const k=i.closest(".exc").dataset.k,c=cfg(k),a=c[c.mode],r=+i.dataset.r,old=a[r];
   let v=Math.round(+i.value);if(!(v>0))v=old;v=Math.min(+i.max,v);a[r]=v;
-  if(r===0)for(let j=1;j<wk().rounds;j++)if(a[j]===old)a[j]=v;
+  if(r===0)for(let j=1;j<a.length;j++)if(a[j]===old)a[j]=v;
   save();rerenderEx(k)});
 function estimate(w){const prev=W;W=w;const st=build();W=prev;
   return (st.some(x=>x.reps)?"~":"")+fmt(st.reduce((a,x)=>a+x.est,0))}
@@ -442,26 +487,28 @@ function openWorkout(id){W=allW().find(w=>w.id===id)||WORKOUTS[0];$("wName").tex
 
 /* ---------- Construtor de treinos ---------- */
 let draft=null,pickTarget=0;
-function newWorkout(){draft={id:"c"+Date.now(),name:"",blocks:[[]]};$("bDel").style.display="none";renderBuild();show("build")}
-function editWorkout(id){const w=S.custom.find(x=>x.id===id);if(!w)return;draft={id:w.id,name:w.name,blocks:w.blocks.map(b=>b.slice())};$("bDel").style.display="";renderBuild();show("build")}
+function newWorkout(){draft={id:"c"+Date.now(),name:"",blocks:[{r:4,ex:[]}]};$("bDel").style.display="none";renderBuild();show("build")}
+function editWorkout(id){const w=S.custom.find(x=>x.id===id);if(!w)return;draft={id:w.id,name:w.name,blocks:w.blocks.map((b,i)=>Array.isArray(b)?{r:4,ex:b.slice()}:{r:b.r||4,ex:b.ex.map(x=>typeof x==="string"?x:x.k)})};$("bDel").style.display="";renderBuild();show("build")}
 function renderBuild(){
   $("bName").value=draft.name;
-  $("bBlocks").innerHTML=draft.blocks.map((bl,i)=>`<div class="block"><div class="bh">Bloco ${i+1}<button class="lnk" data-act="delblock" data-i="${i}">remover bloco</button></div>`+
+  $("bBlocks").innerHTML=draft.blocks.map((b,i)=>{const bl=b.ex;return `<div class="block"><div class="bh">Bloco ${i+1}<span class="stepper"><button data-act="less" data-i="${i}" aria-label="Menos voltas">−</button><output>${b.r} voltas</output><button data-act="more" data-i="${i}" aria-label="Mais voltas">+</button></span></div><div class="brow bhr"><span>exercícios em superset</span><button class="lnk" data-act="delblock" data-i="${i}">remover bloco</button></div>`+
     (bl.length?bl.map((k,j)=>`<div class="brow"><span>${EX[k].name}<small>${EX[k].pt}</small></span><span class="bacts"><button data-act="up" data-i="${i}" data-j="${j}" aria-label="Subir">↑</button><button data-act="down" data-i="${i}" data-j="${j}" aria-label="Descer">↓</button><button data-act="del" data-i="${i}" data-j="${j}" aria-label="Remover">✕</button></span></div>`).join("")
       :`<p class="hint">Sem exercícios. Os do mesmo bloco são feitos em superset, um a seguir ao outro.</p>`)+
-    `<button class="addbtn" data-act="add" data-i="${i}">+ Exercício</button></div>`).join("")+
+    `<button class="addbtn" data-act="add" data-i="${i}">+ Exercício</button></div>`}).join("")+
     `<button class="addbtn" data-act="addblock">+ Bloco</button>`;
 }
 $("bBlocks").addEventListener("click",e=>{
   const b=e.target.closest("button[data-act]");if(!b)return;
-  const A=b.dataset.act,i=+b.dataset.i,j=+b.dataset.j,bl=draft.blocks[i];
-  if(A==="addblock")draft.blocks.push([]);
+  const A=b.dataset.act,i=+b.dataset.i,j=+b.dataset.j,bl=draft.blocks[i]&&draft.blocks[i].ex;
+  if(A==="addblock")draft.blocks.push({r:4,ex:[]});
+  else if(A==="less")draft.blocks[i].r=Math.max(1,draft.blocks[i].r-1);
+  else if(A==="more")draft.blocks[i].r=Math.min(10,draft.blocks[i].r+1);
   else if(A==="delblock")draft.blocks.splice(i,1);
   else if(A==="del")bl.splice(j,1);
   else if(A==="up"&&j>0){const t=bl[j-1];bl[j-1]=bl[j];bl[j]=t}
   else if(A==="down"&&j<bl.length-1){const t=bl[j+1];bl[j+1]=bl[j];bl[j]=t}
   else if(A==="add"){pickTarget=i;$("pq").value="";renderPicker("");$("picker").classList.add("on");return}
-  if(!draft.blocks.length)draft.blocks.push([]);
+  if(!draft.blocks.length)draft.blocks.push({r:4,ex:[]});
   renderBuild();
 });
 function renderPicker(q){
@@ -474,7 +521,7 @@ function renderPicker(q){
     out+=`<div class="pgroup">${GROUPS[g]}</div>`+ks.map(k=>`<button class="pitem" data-k="${k}">${EX[k].name}<small>${EX[k].pt}</small></button>`).join("");
   }
   $("plist").innerHTML=out||`<p class="hint">Nenhum exercício encontrado.</p>`;
-  $("plist").querySelectorAll(".pitem").forEach(b=>b.onclick=()=>{draft.blocks[pickTarget].push(b.dataset.k);$("picker").classList.remove("on");renderBuild()});
+  $("plist").querySelectorAll(".pitem").forEach(b=>b.onclick=()=>{draft.blocks[pickTarget].ex.push(b.dataset.k);$("picker").classList.remove("on");renderBuild()});
 }
 $("pq").addEventListener("input",e=>renderPicker(e.target.value));
 $("pClose").onclick=()=>$("picker").classList.remove("on");
@@ -482,13 +529,14 @@ $("picker").addEventListener("click",e=>{if(e.target.id==="picker")$("picker").c
 $("newW").onclick=newWorkout;
 $("bBack").onclick=()=>{renderHome();show("home")};
 $("bSave").onclick=()=>{
-  const blocks=draft.blocks.filter(b=>b.length);
+  const blocks=draft.blocks.filter(b=>b.ex.length);
   if(!blocks.length){alert("Adiciona pelo menos um exercício.");return}
-  const n=blocks.reduce((a,b)=>a+b.length,0);
+  const n=blocks.reduce((a,b)=>a+b.ex.length,0);
   const w={id:draft.id,name:($("bName").value||"").trim()||"Treino sem nome",
     sub:`${blocks.length} bloco${blocks.length>1?"s":""}, ${n} exercício${n>1?"s":""}`,blocks};
   const i=S.custom.findIndex(x=>x.id===w.id);
   if(i<0)S.custom.push(w);else S.custom[i]=w;
+  if(S.wk[w.id])S.wk[w.id].br=[];
   save();renderHome();show("home");
 };
 $("bDel").onclick=()=>{
@@ -513,19 +561,23 @@ const updTotal=()=>{const st=build();$("total").textContent=(st.some(x=>x.reps)?
 
 /* ---------- Timeline ---------- */
 function build(){
+  const o=wk(),works=[];
+  W.blocks.forEach((_,bi)=>{const its=items(W,bi),R=bRounds(bi);
+    for(let r=1;r<=R;r++)its.forEach((it,i)=>works.push({bi,r,R,it,lastI:i===its.length-1,lastR:r===R}))});
+  const meta=w=>{const k=w.it.k;return {ex:k,b:w.bi,r:w.r,rt:w.R,
+    side:EX[k].alt?(w.r%2?"esq":"dir"):null,
+    vlab:w.it.vars?w.it.vars[(w.r-1)%w.it.vars.length]:null}};
   const st=[];
-  if(wk().prep>0) st.push({t:"prep",d:wk().prep,ex:W.blocks[0][0],b:0,r:1});
-  W.blocks.forEach((bl,bi)=>{for(let r=1;r<=wk().rounds;r++){bl.forEach((ex,i)=>{
-    const c=cfg(ex),v=c[c.mode][r-1],w={t:"work",ex,b:bi,r,side:EX[ex].alt?(r%2?"esq":"dir"):null};
-    if(c.mode==="reps"){w.reps=v;w.est=v*REP_S}else w.d=v;
-    st.push(w);
-    const lastI=i===bl.length-1,lastR=r===wk().rounds,lastB=bi===W.blocks.length-1;
-    const nx=!lastI?bl[i+1]:!lastR?bl[0]:!lastB?W.blocks[bi+1][0]:null;
-    if(!nx) return;
-    const nb=lastI&&lastR?bi+1:bi, nr=lastI?(lastR?1:r+1):r, ns=EX[nx].alt?(nr%2?"esq":"dir"):null;
-    if(lastI&&lastR&&wk().trans>0) st.push({t:"trans",d:wk().trans,ex:nx,b:nb,r:nr,side:ns});
-    else if(wk().rest>0) st.push({t:"rest",d:wk().rest,ex:nx,b:nb,r:nr,side:ns});
-  })}});
+  if(!works.length) return st;
+  if(o.prep>0) st.push(Object.assign({t:"prep",d:o.prep},meta(works[0])));
+  works.forEach((w,i)=>{
+    const c=cfg(w.it.k),v=c[c.mode][w.r-1],step=Object.assign({t:"work"},meta(w));
+    if(c.mode==="reps"){step.reps=v;step.est=v*REP_S}else step.d=v;
+    st.push(step);
+    const nx=works[i+1];if(!nx)return;
+    if(w.lastI&&w.lastR&&o.trans>0) st.push(Object.assign({t:"trans",d:o.trans},meta(nx)));
+    else if(o.rest>0) st.push(Object.assign({t:"rest",d:o.rest},meta(nx)));
+  });
   st.forEach(x=>{if(x.est==null)x.est=x.d});
   return st;
 }
@@ -572,9 +624,9 @@ function enter(i,quiet){
   setPhaseColors(st.t);
   $("phase").textContent=LABEL[st.t];
   $("pBlock").textContent=`Bloco ${st.b+1}/${W.blocks.length}`;
-  $("pRound").textContent=`Volta ${st.r}/${wk().rounds}`;
+  $("pRound").textContent=`Volta ${st.r}/${st.rt||wk().rounds}`;
   $("exName").textContent=ex.name;
-  const leg=st.side?(st.side==="esq"?"perna esquerda":"perna direita"):"";
+  const leg=[st.side?(st.side==="esq"?(EX[st.ex].g==="core"?"braço esquerdo":"perna esquerda"):(EX[st.ex].g==="core"?"braço direito":"perna direita")):"",st.vlab||""].filter(Boolean).join(", ");
   let target="";
   if(st.t!=="work"){const nw=steps.slice(idx+1).find(x=>x.t==="work");if(nw)target=nw.reps?`${nw.reps} reps`:`${nw.d} s`}
   $("exPt").textContent=(st.t==="work"?"":"A seguir: ")+ex.pt+(leg?", "+leg:"")+(target?`, ${target}`:"");
@@ -637,7 +689,7 @@ function start(){
 }
 function finish(){
   running=false;unlock();speak("Treino concluído. Bom trabalho!");beep(1320,.6,.4);
-  $("doneTxt").textContent=`Tempo total: ${fmt((Date.now()-t0)/1000)}. ${W.blocks.length} blocos, ${wk().rounds} voltas cada.`;
+  $("doneTxt").textContent=`Tempo total: ${fmt((Date.now()-t0)/1000)}. ${W.blocks.length} blocos.`;
   show("done");
 }
 
