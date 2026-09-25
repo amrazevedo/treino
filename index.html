@@ -46,9 +46,11 @@ button{touch-action:manipulation;cursor:pointer}
 .screen.on{display:flex;flex-direction:column}
 
 /* Setup */
-#setup{padding:calc(16px + env(safe-area-inset-top,0px)) 16px 28px;gap:18px}
+#setup,#home,#build,#preview{padding:calc(16px + env(safe-area-inset-top,0px)) 16px 28px;gap:18px}
+#preview .title{position:sticky;top:0;z-index:2;background:var(--bg);padding:calc(6px + env(safe-area-inset-top,0px)) 0 8px;margin-top:calc(-16px - env(safe-area-inset-top,0px))}
+.back{font-size:16px;padding:8px 2px;min-height:44px;display:inline-flex;align-items:center}
 #nosleep{position:fixed;top:0;left:0;width:1px;height:1px;opacity:.01;pointer-events:none}
-.back{border:0;background:transparent;color:var(--muted);font-weight:600;padding:4px 0;font-size:15px}
+.back{border:0;background:transparent;color:var(--muted);font-weight:600}
 .wcard{background:var(--panel);border-radius:14px;padding:14px;display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;border:0;text-align:left;font-family:var(--text)}
 .wcard .lbl{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
 .wcard b{font-family:var(--display);font-weight:800;font-size:24px;line-height:1.05}
@@ -410,7 +412,7 @@ const EX={
     A:side([48,138],[60,140],[100,142],[[[118,120],[134,146]],[[122,118],[138,146]]],[[[64,128],[52,132]]]),
     B:side([55,122],[66,127],[100,142],[[[118,120],[134,146]],[[122,118],[138,146]]],[[[70,114],[58,118]]])}
 };
-const APP_V=14;
+const APP_V=15;
 const WORKOUTS=[
   {id:"s1",name:"Semana 1",sub:"Força com halteres, 4 blocos em superset",
    blocks:[["incline","split"],["row","sumo"],["deadlift","triceps"],["pulldown","crunch"]]},
