@@ -406,21 +406,29 @@ const EX={
     props:"",
     A:side([113,86],[104,92],[86,112],[[[108,128],[104,148]],[[114,126],[112,148]]],[[[106,114],[108,136]]]),
     B:side([101,34],[100,46],[100,86],[[[99,118],[98,148]],[[102,118],[101,148]]],[[[94,28],[97,8]]])},
+  bike:{name:"Standing Stationary Bike",g:"full",pt:"Bicicleta estática em pé",db:"none",defMode:"time",defTime:300,defDist:2,
+    cues:["Fora do selim, peso sobre os pedais","Mãos leves no guiador, sem carregar nos braços","Cadência constante, anca estável"],
+    props:'<circle class="prop" cx="104" cy="126" r="14" fill="none"/><path class="prop thin" d="M104 126 L138 84 M104 126 V148 M76 148 H150 M104 126 L84 98 M138 84 H150"/>',
+    A:side([126,54],[116,60],[94,80],[[[118,92],[104,112]],[[122,114],[104,140]]],[[[130,64],[142,74]]]),
+    B:side([126,54],[116,60],[94,80],[[[122,114],[104,140]],[[118,92],[104,112]]],[[[130,64],[142,74]]])},
   crunch:{name:"Crunch",g:"core",pt:"Abdominal",
     cues:["Lombar colada ao chão","Mãos atrás da cabeça, sem puxar o pescoço","Sobe as omoplatas e expira ao subir"],
     props:'<path class="prop" d="M34 150 H150" style="stroke-width:4"/>',db:"none",
     A:side([48,138],[60,140],[100,142],[[[118,120],[134,146]],[[122,118],[138,146]]],[[[64,128],[52,132]]]),
     B:side([55,122],[66,127],[100,142],[[[118,120],[134,146]],[[122,118],[138,146]]],[[[70,114],[58,118]]])}
 };
-const APP_V=15;
+const APP_V=16;
 const WORKOUTS=[
   {id:"s1",name:"Semana 1",sub:"Força com halteres, 4 blocos em superset",
    blocks:[["incline","split"],["row","sumo"],["deadlift","triceps"],["pulldown","crunch"]]},
-  {id:"s2",name:"Semana 2",sub:"Máquinas, cabos e halteres, 4 blocos a 5 reps",mode:"reps",defReps:5,
+  {id:"s2",name:"Semana 2",sub:"4 blocos a 5 reps, com bicicleta entre eles",mode:"reps",defReps:5,
    blocks:[
      {r:3,ex:["seatedrow","legpress"]},
+     {r:1,name:"Bicicleta",ex:["bike"]},
      {r:3,ex:["cabledeadlift","renegade"]},
+     {r:1,name:"Bicicleta",ex:["bike"]},
      {r:3,ex:[{k:"inclineshoulderpress",vars:["Simultâneo","Unilateral","Alternado"]},"deadlift"]},
+     {r:1,name:"Bicicleta",ex:["bike"]},
      {r:2,ex:[{k:"snatch",vars:["Unilateral","Simultâneo"]}]}
    ]}
   // novos treinos: adicionar aqui outro objeto com id único e os blocos de exercícios
@@ -468,6 +476,8 @@ try{Object.assign(S,JSON.parse(localStorage.getItem("treino-cfg")||"{}"))}catch(
 const save=()=>{try{localStorage.setItem("treino-cfg",JSON.stringify(S))}catch(e){}};
 const FIELDS=[["rest","Pausa (s)",5,0,120],["trans","Transição entre blocos (s)",15,0,300],["prep","Preparação inicial (s)",5,0,60]];
 const REP_S=3.2; // segundos por repetição no ritmo guia
+const KMH=20;    // velocidade assumida, só para estimar a duração
+const manual=st=>!!(st&&(st.reps!=null||st.dist!=null));
 const fmt=s=>{s=Math.max(0,Math.round(s));return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")};
 S.cfg=S.cfg||{};S.wk=S.wk||{};S.custom=Array.isArray(S.custom)?S.custom:[];
 const allW=()=>WORKOUTS.concat(S.custom);
@@ -476,25 +486,30 @@ function wk(){const o=S.wk[W.id]=S.wk[W.id]||{},d={rest:10,trans:60,rounds:4,pre
   if(!Array.isArray(o.br))o.br=[];return o}
 const blkOf=(w,i)=>{const b=w.blocks[i];return Array.isArray(b)?{ex:b}:b};
 const items=(w,i)=>blkOf(w,i).ex.map(x=>typeof x==="string"?{k:x}:x);
+function blockLabel(i){const b=blkOf(W,i);if(b.name)return b.name;
+  let n=0;for(let j=0;j<=i;j++)if(!blkOf(W,j).name)n++;return "Bloco "+n}
 function bRounds(i){const o=wk();return typeof o.br[i]==="number"?o.br[i]:(blkOf(W,i).r||o.rounds)}
 const maxRounds=()=>W.blocks.reduce((m,_,i)=>Math.max(m,bRounds(i)),1);
 function exRounds(k){for(let i=0;i<W.blocks.length;i++)if(items(W,i).some(x=>x.k===k))return bRounds(i);return maxRounds()}
 function cfg(k){
   const key=W.id+":"+k;let c=S.cfg[key];if(!c||!Array.isArray(c.time)||!Array.isArray(c.reps))c=S.cfg[key]={mode:"time",time:[],reps:[]};
-  if(!S.cfg[key+"|init"]){c.mode=W.mode||"time";S.cfg[key+"|init"]=1}
-  for(const m of ["time","reps"]){const a=c[m],def=m==="time"?(W.defTime||45):(W.defReps||10);while(a.length<maxRounds())a.push(a.length?a[a.length-1]:def)}
+  if(!Array.isArray(c.dist))c.dist=[];
+  if(!S.cfg[key+"|init"]){c.mode=(EX[k]&&EX[k].defMode)||W.mode||"time";S.cfg[key+"|init"]=1}
+  for(const m of ["time","reps","dist"]){const a=c[m],
+    def=m==="time"?((EX[k]&&EX[k].defTime)||W.defTime||45):m==="reps"?(W.defReps||10):((EX[k]&&EX[k].defDist)||1);
+    while(a.length<maxRounds())a.push(a.length?a[a.length-1]:def)}
   return c;
 }
 function exCard(k){
-  const c=cfg(k),v=c[c.mode],u=c.mode==="time"?"s":"reps",mx=c.mode==="time"?600:100;
+  const c=cfg(k),v=c[c.mode],u=c.mode==="time"?"s":c.mode==="reps"?"reps":"km",mx=c.mode==="time"?1800:100,stp=c.mode==="dist"?"0.1":"1";
   const head=k==="__all"?"":`<div class="ex">${EX[k].name}<small>${EX[k].pt}${EX[k].alt?", alterna a perna em cada volta":""}</small></div>`;
   return `<div class="exc" data-k="${k}">${head}
-  <div class="seg" role="group" aria-label="Modo"><button data-m="time" class="${c.mode==="time"?"on":""}">Tempo</button><button data-m="reps" class="${c.mode==="reps"?"on":""}">Repetições</button></div>
-  <div class="vals">${v.slice(0,k==="__all"?maxRounds():exRounds(k)).map((x,r)=>`<label><span>V${r+1}</span><input type="number" inputmode="numeric" min="1" max="${mx}" value="${x}" data-r="${r}" aria-label="Volta ${r+1}"><em>${u}</em></label>`).join("")}</div></div>`;
+  <div class="seg" role="group" aria-label="Modo"><button data-m="time" class="${c.mode==="time"?"on":""}">Tempo</button><button data-m="reps" class="${c.mode==="reps"?"on":""}">Reps</button><button data-m="dist" class="${c.mode==="dist"?"on":""}">Distância</button></div>
+  <div class="vals">${v.slice(0,k==="__all"?maxRounds():exRounds(k)).map((x,r)=>`<label><span>V${r+1}</span><input type="number" inputmode="decimal" step="${stp}" min="${c.mode==="dist"?"0.1":"1"}" max="${mx}" value="${x}" data-r="${r}" aria-label="Volta ${r+1}"><em>${u}</em></label>`).join("")}</div></div>`;
 }
 function renderBlocks(){
   $("blocks").innerHTML=`<div class="block general"><div class="bh">Todos os exercícios<span>aplica-se a todos</span></div>${exCard("__all")}</div>`+
-    W.blocks.map((b,i)=>`<div class="block"><div class="bh">Bloco ${i+1}<span class="stepper"><button data-br="${i}" data-d="-1" aria-label="Menos voltas">−</button><output>${bRounds(i)} voltas</output><button data-br="${i}" data-d="1" aria-label="Mais voltas">+</button></span></div>${items(W,i).map(x=>exCard(x.k)).join("")}</div>`).join("");
+    W.blocks.map((b,i)=>`<div class="block"><div class="bh">${blockLabel(i)}<span class="stepper"><button data-br="${i}" data-d="-1" aria-label="Menos voltas">−</button><output>${bRounds(i)} voltas</output><button data-br="${i}" data-d="1" aria-label="Mais voltas">+</button></span></div>${items(W,i).map(x=>exCard(x.k)).join("")}</div>`).join("");
   updTotal();
 }
 function rerenderEx(k){
@@ -506,11 +521,11 @@ $("blocks").addEventListener("click",e=>{
   const b=e.target.closest(".seg button");if(!b)return;const k=b.closest(".exc").dataset.k;cfg(k).mode=b.dataset.m;save();rerenderEx(k)});
 $("blocks").addEventListener("change",e=>{const i=e.target.closest("input");if(!i)return;
   const k=i.closest(".exc").dataset.k,c=cfg(k),a=c[c.mode],r=+i.dataset.r,old=a[r];
-  let v=Math.round(+i.value);if(!(v>0))v=old;v=Math.min(+i.max,v);a[r]=v;
+  let v=c.mode==="dist"?Math.round((+i.value)*10)/10:Math.round(+i.value);if(!(v>0))v=old;v=Math.min(+i.max,v);a[r]=v;
   if(r===0)for(let j=1;j<a.length;j++)if(a[j]===old)a[j]=v;
   save();rerenderEx(k)});
 function estimate(w){const prev=W;W=w;const st=build();W=prev;
-  return (st.some(x=>x.reps)?"~":"")+fmt(st.reduce((a,x)=>a+x.est,0))}
+  return (st.some(manual)?"~":"")+fmt(st.reduce((a,x)=>a+x.est,0))}
 function renderHome(){
   $("wlist").innerHTML=allW().map(w=>`<div class="wcard" data-w="${w.id}"><span class="lbl"><b>${w.name}</b><small>${w.sub}</small>${w.id[0]==="c"?`<button class="lnk wedit" data-edit="${w.id}">editar</button>`:""}</span><span class="meta">${estimate(w)}</span></div>`).join("")+
     `<p class="hint">Versão ${APP_V}</p>`;
@@ -570,11 +585,11 @@ function renderPreview(){
   $("pvSum").textContent=`${W.blocks.length} blocos, ${st.filter(x=>x.t==="work").length} séries, ${anyReps?"~":""}${fmt(tot)}`;
   $("pvList").innerHTML=W.blocks.map((b,i)=>{
     const R=bRounds(i);
-    return `<div class="block"><div class="bh">Bloco ${i+1}<span>${R} volta${R>1?"s":""}</span></div>`+
+    return `<div class="block"><div class="bh">${blockLabel(i)}<span>${R} volta${R>1?"s":""}</span></div>`+
       items(W,i).map(x=>{
         const c=cfg(x.k),v=c[c.mode],ex=EX[x.k],
           vv=v.slice(0,R),same=vv.every(n=>n===vv[0]),
-          tgt=(same?String(vv[0]):vv.join("/"))+(c.mode==="time"?"s":" reps"),
+          tgt=(same?String(vv[0]):vv.join("/"))+(c.mode==="time"?"s":c.mode==="reps"?" reps":" km"),
           extra=[ex.alt?"alterna o lado":"",x.vars?x.vars.slice(0,R).join(", "):""].filter(Boolean).join(" — ");
         return `<button class="prow" data-ex="${x.k}"><svg class="thumb fx" data-k="${x.k}" viewBox="20 0 150 156" preserveAspectRatio="xMidYMid meet"></svg><span class="pline"><span class="pmeta"><b>${ex.name}</b><small>${ex.pt}${extra?" — "+extra:""}</small></span><span class="tgt">${tgt}</span></span></button>`;
       }).join("")+`</div>`;
@@ -633,7 +648,7 @@ function renderSetup(){
   $("vc").onchange=e=>{S.voice=e.target.checked;save()};
   renderBlocks();
 }
-const updTotal=()=>{const st=build();$("total").textContent=(st.some(x=>x.reps)?"~":"")+fmt(st.reduce((a,s)=>a+s.est,0))};
+const updTotal=()=>{const st=build();$("total").textContent=(st.some(manual)?"~":"")+fmt(st.reduce((a,s)=>a+s.est,0))};
 
 /* ---------- Timeline ---------- */
 function build(){
@@ -648,7 +663,9 @@ function build(){
   if(o.prep>0) st.push(Object.assign({t:"prep",d:o.prep},meta(works[0])));
   works.forEach((w,i)=>{
     const c=cfg(w.it.k),v=c[c.mode][w.r-1],step=Object.assign({t:"work"},meta(w));
-    if(c.mode==="reps"){step.reps=v;step.est=v*REP_S}else step.d=v;
+    if(c.mode==="reps"){step.reps=v;step.est=v*REP_S}
+    else if(c.mode==="dist"){step.dist=v;step.est=v/KMH*3600}
+    else step.d=v;
     st.push(step);
     const nx=works[i+1];if(!nx)return;
     if(w.lastI&&w.lastR&&o.trans>0) st.push(Object.assign({t:"trans",d:o.trans},meta(nx)));
@@ -686,7 +703,7 @@ const elapsed=()=>((paused?pauseAt:now())-stepStart)/1000;
 function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on",s.id===id))}
 function setPhaseColors(t){const m={work:["--work","--work-ink"],rest:["--rest","--rest-ink"],trans:["--trans","--trans-ink"],prep:["--prep","--prep-ink"]}[t];$("band").style.setProperty("--phase",`var(${m[0]})`);$("band").style.setProperty("--phase-ink",`var(${m[1]})`)}
 function setMainIcon(){
-  const reps=!!(steps[idx]&&steps[idx].reps);
+  const reps=manual(steps[idx]);
   $("play").setAttribute("aria-label",reps?"Feito":paused?"Retomar":"Pausar");
   $("playIcon").innerHTML=reps?CHECK:paused?PLAY:PAUSE;
   $("play").classList.toggle("done",reps);
@@ -695,16 +712,16 @@ function setMainIcon(){
 function enter(i,quiet){
   idx=i;fired={};
   const st=steps[idx],ex=EX[st.ex];
-  if(st.reps&&paused){stepStart+=now()-pauseAt;paused=false}
+  if(manual(st)&&paused){stepStart+=now()-pauseAt;paused=false}
   setMainIcon();
   setPhaseColors(st.t);
   $("phase").textContent=LABEL[st.t];
-  $("pBlock").textContent=`Bloco ${st.b+1}/${W.blocks.length}`;
+  $("pBlock").textContent=blockLabel(st.b);
   $("pRound").textContent=`Volta ${st.r}/${st.rt||wk().rounds}`;
   $("exName").textContent=ex.name;
   const leg=[st.side?(st.side==="esq"?(EX[st.ex].g==="core"?"braço esquerdo":"perna esquerda"):(EX[st.ex].g==="core"?"braço direito":"perna direita")):"",st.vlab||""].filter(Boolean).join(", ");
   let target="";
-  if(st.t!=="work"){const nw=steps.slice(idx+1).find(x=>x.t==="work");if(nw)target=nw.reps?`${nw.reps} reps`:`${nw.d} s`}
+  if(st.t!=="work"){const nw=steps.slice(idx+1).find(x=>x.t==="work");if(nw)target=nw.reps?`${nw.reps} reps`:nw.dist?`${nw.dist} km`:`${nw.d} s`}
   $("exPt").textContent=(st.t==="work"?"":"A seguir: ")+ex.pt+(leg?", "+leg:"")+(target?`, ${target}`:"");
   if(leg&&st.t==="work"){$("banner").textContent=leg[0].toUpperCase()+leg.slice(1);$("banner").classList.add("show")}else $("banner").classList.remove("show");
   $("cues").innerHTML=ex.cues.map(c=>`<li>${c}</li>`).join("");
@@ -715,7 +732,7 @@ function enter(i,quiet){
   animT0=now();
   if(!quiet){
     const L=leg?", "+leg:"";
-    if(st.t==="work") speak(st.reps?`Vai, ${st.reps} repetições${L}`:"Vai"+L);
+    if(st.t==="work") speak(st.reps?`Vai, ${st.reps} repetições${L}`:st.dist?`Vai, ${String(st.dist).replace(".",",")} quilómetros${L}`:"Vai"+L);
     else if(st.t==="trans") speak("Bloco concluído. A seguir, "+ex.pt+L);
     else speak("A seguir, "+ex.pt+L);
   }
@@ -725,18 +742,23 @@ function go(i){if(i<0)i=0;if(i>=steps.length)return finish();stepStart=now();if(
 function loop(){
   if(!running)return;
   let st=steps[idx],e=elapsed();
-  if(!st.reps&&!paused&&st.d-e<=0){
+  if(!manual(st)&&!paused&&st.d-e<=0){
     beep(st.t==="work"?660:1320,.45,.4);
     // avança mantendo a sincronização (também recupera se o ecrã esteve em segundo plano)
     let base=stepStart+st.d*1000,k=idx+1,late=now()-base>1500;
-    while(k<steps.length&&!steps[k].reps&&now()-base>=steps[k].d*1000){base+=steps[k].d*1000;k++}
+    while(k<steps.length&&!manual(steps[k])&&now()-base>=steps[k].d*1000){base+=steps[k].d*1000;k++}
     if(k>=steps.length){finish();return}
     stepStart=base;enter(k,late);st=steps[idx];e=elapsed();
   }
-  if(st.reps){
-    const g=Math.min(st.reps,Math.floor((now()-animT0)/(REP_S*1000))+1);
-    $("clock").innerHTML=`${st.reps}<span class="unit">reps</span>`;
-    $("sub").innerHTML=`Ritmo guia: ${g}/${st.reps}<br>${fmt(e)}`;
+  if(manual(st)){
+    if(st.reps){
+      const g=Math.min(st.reps,Math.floor((now()-animT0)/(REP_S*1000))+1);
+      $("clock").innerHTML=`${st.reps}<span class="unit">reps</span>`;
+      $("sub").innerHTML=`Ritmo guia: ${g}/${st.reps}<br>${fmt(e)}`;
+    }else{
+      $("clock").innerHTML=`${String(st.dist).replace(".",",")}<span class="unit">km</span>`;
+      $("sub").innerHTML=`${fmt(e)}<br>ref. ${fmt(st.est)}`;
+    }
     $("stepbar").style.width=Math.min(100,e/st.est*100)+"%";
     if(e>=st.est&&!fired.g){fired.g=1;beep(990,.15);setTimeout(()=>beep(990,.15),180)}
   }else{
@@ -756,7 +778,7 @@ function setPaused(p){
   if(p){pauseAt=now()}else{stepStart+=now()-pauseAt;animT0+=now()-pauseAt}
   paused=p;setMainIcon();
 }
-function mainBtn(){if(running&&!wl)lock();const st=steps[idx];if(st&&st.reps){beep(1320,.3,.4);go(idx+1)}else setPaused(!paused)}
+function mainBtn(){if(running&&!wl)lock();const st=steps[idx];if(manual(st)){beep(1320,.3,.4);go(idx+1)}else setPaused(!paused)}
 function start(){
   try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();ac.resume()}catch(e){}
   if("speechSynthesis" in window){try{speechSynthesis.getVoices()}catch(e){}}
