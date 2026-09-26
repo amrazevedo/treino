@@ -417,10 +417,16 @@ const EX={
     A:side([48,138],[60,140],[100,142],[[[118,120],[134,146]],[[122,118],[138,146]]],[[[64,128],[52,132]]]),
     B:side([55,122],[66,127],[100,142],[[[118,120],[134,146]],[[122,118],[138,146]]],[[[70,114],[58,118]]])}
 };
-const APP_V=16;
+const APP_V=17;
 const WORKOUTS=[
-  {id:"s1",name:"Semana 1",sub:"Força com halteres, 4 blocos em superset",
-   blocks:[["incline","split"],["row","sumo"],["deadlift","triceps"],["pulldown","crunch"]]},
+  {id:"s1",name:"Semana 1",sub:"Força com halteres, 4 blocos com bicicleta entre eles",
+   blocks:[["incline","split"],
+     {r:1,name:"Bicicleta",ex:["bike"]},
+     ["row","sumo"],
+     {r:1,name:"Bicicleta",ex:["bike"]},
+     ["deadlift","triceps"],
+     {r:1,name:"Bicicleta",ex:["bike"]},
+     ["pulldown","crunch"]]},
   {id:"s2",name:"Semana 2",sub:"4 blocos a 5 reps, com bicicleta entre eles",mode:"reps",defReps:5,
    blocks:[
      {r:3,ex:["seatedrow","legpress"]},
@@ -491,8 +497,10 @@ function blockLabel(i){const b=blkOf(W,i);if(b.name)return b.name;
 function bRounds(i){const o=wk();return typeof o.br[i]==="number"?o.br[i]:(blkOf(W,i).r||o.rounds)}
 const maxRounds=()=>W.blocks.reduce((m,_,i)=>Math.max(m,bRounds(i)),1);
 function exRounds(k){for(let i=0;i<W.blocks.length;i++)if(items(W,i).some(x=>x.k===k))return bRounds(i);return maxRounds()}
-function cfg(k){
-  const key=W.id+":"+k;let c=S.cfg[key];if(!c||!Array.isArray(c.time)||!Array.isArray(c.reps))c=S.cfg[key]={mode:"time",time:[],reps:[]};
+function cfg(k,bi){
+  const key=k==="__all"?W.id+":all":W.id+":b"+(bi==null?0:bi)+":"+k;
+  let c=S.cfg[key];
+  if(!c&&k!=="__all"){const old=S.cfg[W.id+":"+k];if(old){c=S.cfg[key]=JSON.parse(JSON.stringify(old));S.cfg[key+"|init"]=1}}if(!c||!Array.isArray(c.time)||!Array.isArray(c.reps))c=S.cfg[key]={mode:"time",time:[],reps:[]};
   if(!Array.isArray(c.dist))c.dist=[];
   if(!S.cfg[key+"|init"]){c.mode=(EX[k]&&EX[k].defMode)||W.mode||"time";S.cfg[key+"|init"]=1}
   for(const m of ["time","reps","dist"]){const a=c[m],
@@ -500,30 +508,36 @@ function cfg(k){
     while(a.length<maxRounds())a.push(a.length?a[a.length-1]:def)}
   return c;
 }
-function exCard(k){
-  const c=cfg(k),v=c[c.mode],u=c.mode==="time"?"s":c.mode==="reps"?"reps":"km",mx=c.mode==="time"?1800:100,stp=c.mode==="dist"?"0.1":"1";
+function exCard(k,bi){
+  const c=cfg(k,bi),v=c[c.mode],u=c.mode==="time"?"s":c.mode==="reps"?"reps":"km",mx=c.mode==="time"?1800:100,stp=c.mode==="dist"?"0.1":"1";
   const head=k==="__all"?"":`<div class="ex">${EX[k].name}<small>${EX[k].pt}${EX[k].alt?", alterna a perna em cada volta":""}</small></div>`;
-  return `<div class="exc" data-k="${k}">${head}
+  return `<div class="exc" data-k="${k}" data-b="${bi==null?"":bi}">${head}
   <div class="seg" role="group" aria-label="Modo"><button data-m="time" class="${c.mode==="time"?"on":""}">Tempo</button><button data-m="reps" class="${c.mode==="reps"?"on":""}">Reps</button><button data-m="dist" class="${c.mode==="dist"?"on":""}">Distância</button></div>
-  <div class="vals">${v.slice(0,k==="__all"?maxRounds():exRounds(k)).map((x,r)=>`<label><span>V${r+1}</span><input type="number" inputmode="decimal" step="${stp}" min="${c.mode==="dist"?"0.1":"1"}" max="${mx}" value="${x}" data-r="${r}" aria-label="Volta ${r+1}"><em>${u}</em></label>`).join("")}</div></div>`;
+  <div class="vals">${v.slice(0,k==="__all"?maxRounds():bRounds(bi)).map((x,r)=>`<label><span>V${r+1}</span><input type="number" inputmode="decimal" step="${stp}" min="${c.mode==="dist"?"0.1":"1"}" max="${mx}" value="${x}" data-r="${r}" aria-label="Volta ${r+1}"><em>${u}</em></label>`).join("")}</div></div>`;
 }
 function renderBlocks(){
   $("blocks").innerHTML=`<div class="block general"><div class="bh">Todos os exercícios<span>aplica-se a todos</span></div>${exCard("__all")}</div>`+
-    W.blocks.map((b,i)=>`<div class="block"><div class="bh">${blockLabel(i)}<span class="stepper"><button data-br="${i}" data-d="-1" aria-label="Menos voltas">−</button><output>${bRounds(i)} voltas</output><button data-br="${i}" data-d="1" aria-label="Mais voltas">+</button></span></div>${items(W,i).map(x=>exCard(x.k)).join("")}</div>`).join("");
+    W.blocks.map((b,i)=>`<div class="block"><div class="bh">${blockLabel(i)}<span class="stepper"><button data-br="${i}" data-d="-1" aria-label="Menos voltas">−</button><output>${bRounds(i)} voltas</output><button data-br="${i}" data-d="1" aria-label="Mais voltas">+</button></span></div>${items(W,i).map(x=>exCard(x.k,i)).join("")}</div>`).join("");
   updTotal();
 }
-function rerenderEx(k){
-  if(k==="__all"){const g=cfg("__all");Object.keys(EX).forEach(x=>{const c=cfg(x);c.mode=g.mode;c[g.mode]=g[g.mode].slice()});save();renderBlocks();return}
-  document.querySelector(`.exc[data-k="${k}"]`).outerHTML=exCard(k);updTotal()}
+function rerenderEx(k,bi){
+  if(k==="__all"){const g=cfg("__all");
+    W.blocks.forEach((_,i)=>items(W,i).forEach(x=>{const c=cfg(x.k,i);c.mode=g.mode;c[g.mode]=g[g.mode].slice()}));
+    save();renderBlocks();return}
+  const el=document.querySelector(`.exc[data-k="${k}"][data-b="${bi}"]`);
+  if(el)el.outerHTML=exCard(k,bi);else renderBlocks();
+  updTotal()}
 $("blocks").addEventListener("click",e=>{
   const br=e.target.closest("button[data-br]");
   if(br){const i=+br.dataset.br,o=wk();o.br[i]=Math.min(10,Math.max(1,bRounds(i)+ +br.dataset.d));save();renderBlocks();return}
-  const b=e.target.closest(".seg button");if(!b)return;const k=b.closest(".exc").dataset.k;cfg(k).mode=b.dataset.m;save();rerenderEx(k)});
+  const b=e.target.closest(".seg button");if(!b)return;
+  const el=b.closest(".exc"),k=el.dataset.k,bi=el.dataset.b===""?null:+el.dataset.b;
+  cfg(k,bi).mode=b.dataset.m;save();rerenderEx(k,bi)});
 $("blocks").addEventListener("change",e=>{const i=e.target.closest("input");if(!i)return;
-  const k=i.closest(".exc").dataset.k,c=cfg(k),a=c[c.mode],r=+i.dataset.r,old=a[r];
+  const el=i.closest(".exc"),k=el.dataset.k,bi=el.dataset.b===""?null:+el.dataset.b,c=cfg(k,bi),a=c[c.mode],r=+i.dataset.r,old=a[r];
   let v=c.mode==="dist"?Math.round((+i.value)*10)/10:Math.round(+i.value);if(!(v>0))v=old;v=Math.min(+i.max,v);a[r]=v;
   if(r===0)for(let j=1;j<a.length;j++)if(a[j]===old)a[j]=v;
-  save();rerenderEx(k)});
+  save();rerenderEx(k,bi)});
 function estimate(w){const prev=W;W=w;const st=build();W=prev;
   return (st.some(manual)?"~":"")+fmt(st.reduce((a,x)=>a+x.est,0))}
 function renderHome(){
@@ -587,7 +601,7 @@ function renderPreview(){
     const R=bRounds(i);
     return `<div class="block"><div class="bh">${blockLabel(i)}<span>${R} volta${R>1?"s":""}</span></div>`+
       items(W,i).map(x=>{
-        const c=cfg(x.k),v=c[c.mode],ex=EX[x.k],
+        const c=cfg(x.k,i),v=c[c.mode],ex=EX[x.k],
           vv=v.slice(0,R),same=vv.every(n=>n===vv[0]),
           tgt=(same?String(vv[0]):vv.join("/"))+(c.mode==="time"?"s":c.mode==="reps"?" reps":" km"),
           extra=[ex.alt?"alterna o lado":"",x.vars?x.vars.slice(0,R).join(", "):""].filter(Boolean).join(" — ");
@@ -662,7 +676,7 @@ function build(){
   if(!works.length) return st;
   if(o.prep>0) st.push(Object.assign({t:"prep",d:o.prep},meta(works[0])));
   works.forEach((w,i)=>{
-    const c=cfg(w.it.k),v=c[c.mode][w.r-1],step=Object.assign({t:"work"},meta(w));
+    const c=cfg(w.it.k,w.bi),v=c[c.mode][w.r-1],step=Object.assign({t:"work"},meta(w));
     if(c.mode==="reps"){step.reps=v;step.est=v*REP_S}
     else if(c.mode==="dist"){step.dist=v;step.est=v/KMH*3600}
     else step.d=v;
