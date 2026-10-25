@@ -361,7 +361,7 @@ const EX={
     props:"",
     A:{h:[100,26],s:[100,38],p:[100,78],legs:[[[94,78],[88,112],[84,148]],[[106,78],[112,112],[116,148]]],arms:[[[90,40],[88,58],[96,66]],[[110,40],[112,58],[104,66]]]},
     B:{h:[100,52],s:[100,64],p:[100,104],legs:[[[94,104],[78,116],[84,148]],[[106,104],[122,116],[116,148]]],arms:[[[90,66],[88,84],[96,92]],[[110,66],[112,84],[104,92]]]}},
-  lunge:{name:"Walking Lunge",g:"pernas",pt:"Afundo",db:"hands",
+  lunge:{name:"Lunge",g:"pernas",pt:"Afundo",db:"hands",
     cues:["Passo largo, tronco direito","Joelho de trás quase toca o chão","Empurra com o calcanhar da frente, alternando as pernas"],
     props:"",
     A:side([100,22],[100,34],[100,76],[[[82,112],[62,146]],[[114,112],[124,148]]],[[[102,56],[103,76]]]),
@@ -426,13 +426,33 @@ const EX={
     props:"",
     A:{h:[100,26],s:[100,38],p:[100,78],legs:[[[94,78],[92,112],[90,148]],[[106,78],[108,112],[110,148]]],arms:[[[88,40],[86,58],[86,78]],[[112,40],[114,58],[114,78]]]},
     B:{h:[100,52],s:[100,64],p:[100,100],legs:[[[94,100],[84,118],[90,148]],[[106,100],[116,118],[110,148]]],arms:[[[88,66],[86,84],[86,104]],[[112,66],[114,84],[114,104]]]}},
+  seatedpress:{name:"Seated Single-Arm Dumbbell Shoulder Press",g:"ombros",pt:"Press de ombros sentado, um braço",db:"hands",
+    cues:["Sentado, costas apoiadas e pés firmes no chão","Halter à altura da orelha no ponto baixo","Sobe até esticar o braço, sem inclinar o tronco para o lado"],
+    props:'<path class="prop" d="M92 118 H124"/><path class="prop thin" d="M92 118 V72 M96 118 V148 M120 118 V148"/>',
+    A:side([99,62],[99,76],[100,116],[[[124,116],[126,148]],[[128,114],[130,148]]],[[[86,92],[92,72]]]),
+    B:side([99,62],[99,76],[100,116],[[[124,116],[126,148]],[[128,114],[130,148]]],[[[96,52],[98,30]]])},
+  floorpushup:{name:"Floor Push-Up",g:"peito",pt:"Flexões no chão, subida segmentada",defReps:10,
+    cues:["Começa deitado no chão, mãos debaixo dos ombros","Sobe por etapas: primeiro o peito, depois a bacia, depois os joelhos","Desce pela ordem inversa até voltar a assentar no chão"],
+    props:"",db:"none",
+    A:side([141,138],[130,141],[100,145],[[[76,146],[52,147]],[[74,147],[50,148]]],[[[138,146],[148,144]]]),
+    B:side([141,100],[130,104],[100,116],[[[78,128],[54,142]],[[76,130],[50,144]]],[[[132,124],[134,144]]])},
+  squatpress:{name:"Dumbbell Squat to Shoulder Press",g:"full",pt:"Agachamento seguido de press de ombros",front:true,db:"hands",
+    cues:["Halteres aos ombros, cotovelos à frente","Agacha, sobe até ficar de pé e só então faz o press","Dois tempos distintos: primeiro as pernas, depois os braços"],
+    props:"",
+    A:{h:[100,52],s:[100,64],p:[100,104],legs:[[[94,104],[80,116],[84,148]],[[106,104],[120,116],[116,148]]],arms:[[[90,66],[84,84],[80,68]],[[110,66],[116,84],[120,68]]]},
+    B:{h:[100,26],s:[100,38],p:[100,78],legs:[[[94,78],[92,112],[90,148]],[[106,78],[108,112],[110,148]]],arms:[[[90,40],[86,22],[86,6]],[[110,40],[114,22],[114,6]]]}},
+  thruster:{name:"Dumbbell Thruster",g:"full",pt:"Thruster com halteres",front:true,db:"hands",
+    cues:["Halteres aos ombros, agachamento profundo","Sem pausa: a subida das pernas lança os halteres para cima","Um só movimento contínuo, do agachamento ao braço esticado"],
+    props:"",
+    A:{h:[100,58],s:[100,70],p:[100,110],legs:[[[94,110],[76,118],[84,148]],[[106,110],[124,118],[116,148]]],arms:[[[90,72],[84,90],[80,74]],[[110,72],[116,90],[120,74]]]},
+    B:{h:[100,26],s:[100,38],p:[100,78],legs:[[[94,78],[92,112],[90,148]],[[106,78],[108,112],[110,148]]],arms:[[[90,40],[86,22],[86,6]],[[110,40],[114,22],[114,6]]]}},
   crunch:{name:"Crunch",g:"core",pt:"Abdominal",
     cues:["Lombar colada ao chão","Mãos atrás da cabeça, sem puxar o pescoço","Sobe as omoplatas e expira ao subir"],
     props:'<path class="prop" d="M34 150 H150" style="stroke-width:4"/>',db:"none",
     A:side([48,138],[60,140],[100,142],[[[118,120],[134,146]],[[122,118],[138,146]]],[[[64,128],[52,132]]]),
     B:side([55,122],[66,127],[100,142],[[[118,120],[134,146]],[[122,118],[138,146]]],[[[70,114],[58,118]]])}
 };
-const APP_V=19;
+const APP_V=20;
 const WORKOUTS=[
   {id:"s1",name:"Treino 1",sub:"Força com halteres, 4 blocos com bicicleta entre eles",
    blocks:[["incline","split"],
@@ -472,6 +492,33 @@ const WORKOUTS=[
        {k:"row",lab:"os dois braços"},
        {k:"lunge",lab:"a andar"}]},
      {r:1,name:"Bicicleta",ex:["bike"]}
+   ]},
+  {id:"t4",name:"Treino 4",sub:"Ombros, flexões e afundos, com bicicleta antes de cada bloco",mode:"reps",defReps:10,
+   blocks:[
+     {r:1,name:"Bicicleta",ex:["bike"]},
+     {r:1,ex:[
+       {k:"seatedpress",lab:"direito",reps:5},
+       {k:"seatedpress",lab:"esquerdo",reps:5},
+       {k:"seatedpress",lab:"direito",reps:5},
+       {k:"seatedpress",lab:"esquerdo",reps:5},
+       {k:"sumo",lab:"foco na flexão dos joelhos"},
+       {k:"seatedpress",lab:"direito",reps:5},
+       {k:"seatedpress",lab:"esquerdo",reps:5},
+       {k:"seatedpress",lab:"direito",reps:5},
+       {k:"seatedpress",lab:"esquerdo",reps:5},
+       {k:"sumo",lab:"foco na flexão da anca"}]},
+     {r:1,name:"Bicicleta",ex:["bike"]},
+     {r:1,ex:[
+       "floorpushup",
+       {k:"lunge",lab:"halter na mão do lado da perna de trás, 5 de cada perna",reps:5},
+       {k:"lunge",lab:"sem carga, 5 de cada perna",reps:5},
+       "floorpushup",
+       {k:"lunge",lab:"a avançar, direita sempre à frente"},
+       {k:"lunge",lab:"a recuar, direita sempre atrás"},
+       {k:"lunge",lab:"a avançar, esquerda sempre à frente"},
+       {k:"lunge",lab:"a recuar, esquerda sempre atrás"}]},
+     {r:1,name:"Bicicleta",ex:["bike"]},
+     {r:1,ex:["squatpress","crunch","thruster","crunch"]}
    ]}
   // novos treinos: adicionar aqui outro objeto com id único e os blocos de exercícios
 ];
