@@ -446,13 +446,38 @@ const EX={
     props:"",
     A:{h:[100,58],s:[100,70],p:[100,110],legs:[[[94,110],[76,118],[84,148]],[[106,110],[124,118],[116,148]]],arms:[[[90,72],[84,90],[80,74]],[[110,72],[116,90],[120,74]]]},
     B:{h:[100,26],s:[100,38],p:[100,78],legs:[[[94,78],[92,112],[90,148]],[[106,78],[108,112],[110,148]]],arms:[[[90,40],[86,22],[86,6]],[[110,40],[114,22],[114,6]]]}},
+  inclinefly:{name:"Incline Dumbbell Chest Fly",g:"peito",pt:"Aberturas no banco inclinado",front:true,db:"hands",
+    cues:["Banco a 30°, omoplatas juntas e apoiadas","Cotovelos ligeiramente fletidos e fixos durante todo o movimento","Abre até sentir o peito esticar, fecha sem deixar os halteres bater"],
+    props:'<path class="prop" d="M88 132 V40"/><path class="prop" d="M112 132 V40"/><path class="prop thin" d="M84 132 H116"/>',
+    A:{h:[100,28],s:[100,44],p:[100,88],legs:[[[94,88],[92,118],[90,148]],[[106,88],[108,118],[110,148]]],arms:[[[90,46],[70,54],[48,60]],[[110,46],[130,54],[152,60]]]},
+    B:{h:[100,28],s:[100,44],p:[100,88],legs:[[[94,88],[92,118],[90,148]],[[106,88],[108,118],[110,148]]],arms:[[[90,46],[84,38],[94,28]],[[110,46],[116,38],[106,28]]]}},
+  wgs:{name:"World's Greatest Stretch",g:"full",pt:"Afundo com rotação do tronco",db:"none",
+    cues:["Afundo profundo, mão de apoio no chão por dentro do pé da frente","Roda o tronco e abre o braço até ficar apontado ao teto","Anca para baixo e peito aberto, sem deixar cair o joelho de trás"],
+    props:"",
+    A:side([112,76],[104,86],[86,108],[[[64,130],[44,148]],[[112,112],[118,148]]],[[[98,114],[96,146]],[[108,114],[108,146]]]),
+    B:side([112,72],[104,84],[86,108],[[[64,130],[44,148]],[[112,112],[118,148]]],[[[98,114],[96,146]],[[112,62],[120,36]]])},
+  inchworm:{name:"Inchworm Push-Up",g:"peito",pt:"Flexão com caminhada das mãos",db:"none",
+    cues:["De pé, dobra à anca e pousa as mãos no chão","Caminha com as mãos até à prancha e faz uma flexão","Caminha de volta aos pés e levanta-te"],
+    props:"",
+    A:side([126,102],[118,92],[100,56],[[[86,106],[76,147]],[[88,104],[74,146]]],[[[126,118],[132,146]]]),
+    B:side([141,100],[130,104],[100,116],[[[78,128],[54,142]],[[76,130],[50,144]]],[[[132,124],[134,144]]])},
+  deadliftrow:{name:"Dumbbell Deadlift to Row",g:"full",pt:"Peso morto seguido de remada",db:"hands",
+    cues:["Desce em peso morto, coluna neutra e anca para trás","Em baixo, puxa os halteres às costelas numa remada","Larga a remada e sobe a contrair os glúteos"],
+    props:"",
+    A:side([102,26],[101,38],[100,78],[[[100,112],[98,148]],[[103,112],[102,148]]],[[[102,58],[103,78]]]),
+    B:side([128,70],[118,76],[84,94],[[[100,118],[98,148]],[[103,118],[102,148]]],[[[104,62],[112,88]]])},
+  starcrunch:{name:"Star Crunch",g:"core",pt:"Abdominal em estrela",db:"none",
+    cues:["Deitado de costas, braços e pernas abertos em estrela","Sobe a perna, depois o braço do lado oposto, até se encontrarem","Baixa primeiro o braço e só depois a perna"],
+    props:'<path class="prop" d="M30 150 H152" style="stroke-width:4"/>',
+    A:side([46,138],[58,141],[100,144],[[[122,146],[146,147]],[[124,143],[148,143]]],[[[36,137],[24,134]]]),
+    B:side([54,124],[66,128],[100,144],[[[122,146],[146,147]],[[118,108],[130,76]]],[[[76,98],[106,78]]])},
   crunch:{name:"Crunch",g:"core",pt:"Abdominal",
     cues:["Lombar colada ao chão","Mãos atrás da cabeça, sem puxar o pescoço","Sobe as omoplatas e expira ao subir"],
     props:'<path class="prop" d="M34 150 H150" style="stroke-width:4"/>',db:"none",
     A:side([48,138],[60,140],[100,142],[[[118,120],[134,146]],[[122,118],[138,146]]],[[[64,128],[52,132]]]),
     B:side([55,122],[66,127],[100,142],[[[118,120],[134,146]],[[122,118],[138,146]]],[[[70,114],[58,118]]])}
 };
-const APP_V=20;
+const APP_V=21;
 const WORKOUTS=[
   {id:"s1",name:"Treino 1",sub:"Força com halteres, 4 blocos com bicicleta entre eles",
    blocks:[["incline","split"],
@@ -519,6 +544,28 @@ const WORKOUTS=[
        {k:"lunge",lab:"a recuar, esquerda sempre atrás"}]},
      {r:1,name:"Bicicleta",ex:["bike"]},
      {r:1,ex:["squatpress","crunch","thruster","crunch"]}
+   ]},
+  {id:"t5",name:"Treino 5",sub:"Peito, mobilidade e core, com bicicleta antes de cada bloco",mode:"reps",defReps:10,
+   blocks:[
+     {r:1,name:"Bicicleta",ex:["bike"]},
+     {r:1,ex:[
+       {k:"inclinefly",lab:"banco a 30°, unilateral, 5 de cada lado",reps:5},
+       {k:"wgs",lab:"cabeça a olhar para o chão, 5 de cada lado",reps:5},
+       {k:"wgs",lab:"cabeça acompanha o braço, 5 de cada lado",reps:5},
+       {k:"inclinefly",lab:"banco a 30°, em simultâneo"},
+       {k:"renegade",lab:"5 de cada lado",reps:5}]},
+     {r:1,name:"Bicicleta",ex:["bike"]},
+     {r:1,ex:[
+       "inchworm",
+       {k:"row",lab:"alternado, cotovelo afastado do tronco, 5 de cada lado",reps:5},
+       "inchworm",
+       {k:"row",lab:"simultâneo, cotovelo junto ao tronco"}]},
+     {r:1,name:"Bicicleta",ex:["bike"]},
+     {r:1,ex:[
+       "deadliftrow",
+       {k:"starcrunch",lab:"por etapas: perna, braço, braço, perna"},
+       "deadliftrow",
+       {k:"starcrunch",lab:"a mesma ordem, de forma fluída"}]}
    ]}
   // novos treinos: adicionar aqui outro objeto com id único e os blocos de exercícios
 ];
