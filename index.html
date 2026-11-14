@@ -471,13 +471,18 @@ const EX={
     props:'<path class="prop" d="M30 150 H152" style="stroke-width:4"/>',
     A:side([46,138],[58,141],[100,144],[[[122,146],[146,147]],[[124,143],[148,143]]],[[[36,137],[24,134]]]),
     B:side([54,124],[66,128],[100,144],[[[122,146],[146,147]],[[118,108],[130,76]]],[[[76,98],[106,78]]])},
+  suitcasecomplex:{name:"Suitcase Deadlift to Row to Press",g:"full",pt:"Peso morto ao lado, remada e press",front:true,db:"hands",
+    cues:["Halteres ao lado do corpo: desce em peso morto, coluna neutra","Em baixo, puxa os halteres às costelas numa remada","Sobe, leva os halteres aos ombros e termina com o press acima da cabeça"],
+    props:"",
+    A:{h:[100,52],s:[100,64],p:[100,100],legs:[[[94,100],[86,120],[90,148]],[[106,100],[114,120],[110,148]]],arms:[[[90,66],[86,92],[84,116]],[[110,66],[114,92],[116,116]]]},
+    B:{h:[100,26],s:[100,38],p:[100,78],legs:[[[94,78],[92,112],[90,148]],[[106,78],[108,112],[110,148]]],arms:[[[90,40],[86,22],[86,6]],[[110,40],[114,22],[114,6]]]}},
   crunch:{name:"Crunch",g:"core",pt:"Abdominal",
     cues:["Lombar colada ao chão","Mãos atrás da cabeça, sem puxar o pescoço","Sobe as omoplatas e expira ao subir"],
     props:'<path class="prop" d="M34 150 H150" style="stroke-width:4"/>',db:"none",
     A:side([48,138],[60,140],[100,142],[[[118,120],[134,146]],[[122,118],[138,146]]],[[[64,128],[52,132]]]),
     B:side([55,122],[66,127],[100,142],[[[118,120],[134,146]],[[122,118],[138,146]]],[[[70,114],[58,118]]])}
 };
-const APP_V=21;
+const APP_V=22;
 const WORKOUTS=[
   {id:"s1",name:"Treino 1",sub:"Força com halteres, 4 blocos com bicicleta entre eles",
    blocks:[["incline","split"],
@@ -566,6 +571,33 @@ const WORKOUTS=[
        {k:"starcrunch",lab:"por etapas: perna, braço, braço, perna"},
        "deadliftrow",
        {k:"starcrunch",lab:"a mesma ordem, de forma fluída"}]}
+   ]},
+  {id:"t6",name:"Treino 6",sub:"Braços, peito e core, com bicicleta antes de cada bloco",mode:"reps",defReps:10,
+   blocks:[
+     {r:1,name:"Bicicleta",ex:["bike"]},
+     {r:1,ex:[
+       {k:"triceps",lab:"unilateral, banco a 30°"},
+       "curl",
+       {k:"triceps",lab:"em simultâneo, banco a 30°"},
+       "curl"]},
+     {r:1,name:"Bicicleta",ex:["bike"]},
+     {r:1,ex:[
+       {k:"incline",lab:"unilateral, banco a 30°"},
+       "renegade",
+       {k:"incline",lab:"em simultâneo, banco a 30°"},
+       {k:"deadliftrow",lab:"escada no número de remadas: 1, 2, 3, 4, 5",reps:5}]},
+     {r:1,name:"Bicicleta",ex:["bike"]},
+     {r:1,ex:[
+       {k:"deadlift",lab:"a alternar com o suitcase deadlift"},
+       {k:"crunch",lab:"braços esticados e juntos, queixo ao peito, joelhos abertos e pés juntos"},
+       {k:"sidedeadlift",lab:"a alternar com o peso morto à frente, começando neste"},
+       {k:"crunch",lab:"cotovelo ao joelho oposto, queixo ao peito, joelhos fletidos e pés juntos"}]},
+     {r:1,name:"Bicicleta",ex:["bike"]},
+     {r:1,ex:[
+       "suitcasecomplex",
+       {k:"starcrunch",lab:"perna sobe e flete, mão oposta toca na meia, joelho passa a linha da anca"},
+       "suitcasecomplex",
+       {k:"starcrunch",lab:"o mesmo, sem paragem entre repetições"}]}
    ]}
   // novos treinos: adicionar aqui outro objeto com id único e os blocos de exercícios
 ];
